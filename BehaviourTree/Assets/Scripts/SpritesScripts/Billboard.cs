@@ -10,9 +10,9 @@ public class Billboard : MonoBehaviour {
 		SpriteRenderer sr = GetComponent<SpriteRenderer>();
 		
 		sr.shadowCastingMode = ShadowCastingMode.On;
-		sr.receiveShadows = true;
+	//	sr.receiveShadows = true;
 	}
-	void Start () {
+	void Update () {
 		this.transform.forward = Camera.main.transform.forward;
 	}
 }
