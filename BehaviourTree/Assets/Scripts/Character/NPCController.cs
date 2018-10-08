@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+///	<summary>
+///	This class makes a character controled by an AI.
+///	</summary>  
 public class NPCController : MonoBehaviour {
 
 	// Use this for initialization

@@ -27,7 +27,7 @@ public class CharacterMovementController : MonoBehaviour {
 	
 	void Update () {
 		this.animator.SetBool("Walk", this.IsMoving());
-		this.spriteRenderer.flipX = this.transform.forward.x > 0.0f;
+		this.spriteRenderer.flipX = this.transform.forward.x >= 0.0f;
 	}
 
 	///	<summary>

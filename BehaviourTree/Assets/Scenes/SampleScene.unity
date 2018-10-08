@@ -190,7 +190,7 @@ GameObject:
   - component: {fileID: 534669904}
   - component: {fileID: 534669903}
   - component: {fileID: 534669906}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -268,7 +268,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fa60fe1ec8a6464a9f4d5e73b1df2d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  positionRelativeToPlayer: {x: 0, y: 7, z: 3}
   minDezoom: 0.4
   maxDezoom: 2
   smoothTime: 0.3
