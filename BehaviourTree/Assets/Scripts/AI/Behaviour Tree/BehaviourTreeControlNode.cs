@@ -66,6 +66,14 @@ public class BehaviourTreeControlNode : BehaviourTreeNode {
         }
     }
 
+    public override int ChildrenCount () {
+        return children.Count;
+    }
+
+    public override List<BehaviourTreeNode> GetChildren () {
+        return this.children;
+    }
+
     public enum Type {
         SELECTOR,
         SEQUENCE

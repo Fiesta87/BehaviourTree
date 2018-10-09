@@ -9,6 +9,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 470cc6adc2fb8cc4194c139d0897c76b, type: 3}
-  m_Name: New Behaviour Tree
+  m_Name: MyBT
   m_EditorClassIdentifier: 
+  rect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 0
+    height: 0
   child: {fileID: 0}
