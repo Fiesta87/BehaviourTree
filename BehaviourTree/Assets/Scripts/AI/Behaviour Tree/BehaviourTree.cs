@@ -49,7 +49,9 @@ public class BehaviourTree : BehaviourTreeNode {
     public override List<BehaviourTreeNode> GetChildren () {
 
 		List<BehaviourTreeNode> l = new List<BehaviourTreeNode>();
-		l.Add(child);
+		if(child != null) {
+			l.Add(child);
+		}
         return l;
     }
 
@@ -187,6 +189,11 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 	}
 
 	void SaveNodeAnChildren (BehaviourTreeNode node) {
+
+		if(node == null) {
+			throw new System.NullReferenceException("null node can't be saved");
+		}
+
 		SerializedObject nodeSerializedAsset = new SerializedObject(node);
 
 		nodeSerializedAsset.Update();
@@ -306,6 +313,34 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		}
 	}
 
+	void MoveLeftCallback () {
+		BehaviourTreeNode parent = FindParentOfNodeByID(this.behaviourTree, this.selectedNode.ID);
+		
+		int selectedNodeIndice = parent.GetChildren().IndexOf(this.selectedNode);
+		
+		if(selectedNodeIndice > 0) {
+			BehaviourTreeNode node = parent.GetChildren()[selectedNodeIndice];
+			parent.GetChildren().Remove(node);
+			parent.GetChildren().Insert(selectedNodeIndice-1, node);
+		}
+
+		SaveBehaviourTree();
+	}
+
+	void MoveRightCallback () {
+		BehaviourTreeNode parent = FindParentOfNodeByID(this.behaviourTree, this.selectedNode.ID);
+		
+		int selectedNodeIndice = parent.GetChildren().IndexOf(this.selectedNode);
+		
+		if(selectedNodeIndice < parent.ChildrenCount()-1) {
+			BehaviourTreeNode node = parent.GetChildren()[selectedNodeIndice];
+			parent.GetChildren().Remove(node);
+			parent.GetChildren().Insert(selectedNodeIndice+1, node);
+		}
+
+		SaveBehaviourTree();
+	}
+
 	void CreateNodeRect(BehaviourTreeNode node, BehaviourTreeNode nodeParent) {
 
 		SetColor(node);
@@ -319,9 +354,6 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		if(node is BehaviourTreeExecutionNode) {
 			func = ExecutionWindowFunction;
 		}
-
-		// int idNode = GetNextWindowID();
-		// node.ID = idNode;
 
 		int nbChildren = nodeParent.ChildrenCount();
 
@@ -432,9 +464,9 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 			
 			GenericMenu menu = new GenericMenu();
 
-			menu.AddItem(new GUIContent("New Selector Node"), false, SelectorCallback);
-			menu.AddItem(new GUIContent("New Sequence Node"), false, SequenceCallback);
-			menu.AddItem(new GUIContent("New Execution Node"), false, ExecutionCallback);
+			menu.AddItem(new GUIContent("New Child/Selector"), false, SelectorCallback);
+			menu.AddItem(new GUIContent("New Child/Sequence"), false, SequenceCallback);
+			menu.AddItem(new GUIContent("New Child/Execution"), false, ExecutionCallback);
 			menu.ShowAsContext();
 			
 			current.Use();
@@ -455,10 +487,12 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 			
 			GenericMenu menu = new GenericMenu();
 
-			menu.AddItem(new GUIContent("New Selector Node"), false, SelectorCallback);
-			menu.AddItem(new GUIContent("New Sequence Node"), false, SequenceCallback);
-			menu.AddItem(new GUIContent("New Execution Node"), false, ExecutionCallback);
-			menu.AddItem(new GUIContent("New Sub-tree Node"), false, SubTreeCallback);
+			menu.AddItem(new GUIContent("New Child/Selector"), false, SelectorCallback);
+			menu.AddItem(new GUIContent("New Child/Sequence"), false, SequenceCallback);
+			menu.AddItem(new GUIContent("New Child/Execution"), false, ExecutionCallback);
+			menu.AddItem(new GUIContent("New Child/Sub-tree"), false, SubTreeCallback);
+			menu.AddItem(new GUIContent("Move/Left"), false, MoveLeftCallback);
+			menu.AddItem(new GUIContent("Move/Right"), false, MoveRightCallback);
 			menu.AddItem(new GUIContent("Delete Node and Children"), false, DeleteNodeAndChildrenCallback);
 			menu.ShowAsContext();
 			
@@ -479,6 +513,8 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 			
 			GenericMenu menu = new GenericMenu();
 
+			menu.AddItem(new GUIContent("Move/Left"), false, MoveLeftCallback);
+			menu.AddItem(new GUIContent("Move/Right"), false, MoveRightCallback);
 			menu.AddItem(new GUIContent("Delete Node"), false, DeleteNodeAndChildrenCallback);
 			menu.ShowAsContext();
 			
