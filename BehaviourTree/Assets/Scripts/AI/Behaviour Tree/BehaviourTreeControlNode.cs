@@ -8,6 +8,10 @@ public class BehaviourTreeControlNode : BehaviourTreeNode {
 
     public List<BehaviourTreeNode> children;
 
+    public BehaviourTreeControlNode () {
+        this.children = new List<BehaviourTreeNode>();
+    }
+
     public override void Init () {
         foreach(BehaviourTreeNode child in children) {
 
@@ -55,23 +59,16 @@ public class BehaviourTreeControlNode : BehaviourTreeNode {
         return BehaviourTree.Status.FAILURE;
     }
 
-    public override string GetName () {
-        switch(this.type) {
-
-            case BehaviourTreeControlNode.Type.SELECTOR: return "Selector : " + this.name;
-
-            case BehaviourTreeControlNode.Type.SEQUENCE: return "Sequence : " + this.name;
-
-            default: return "Control : " + this.name;
-        }
-    }
-
     public override int ChildrenCount () {
         return children.Count;
     }
 
     public override List<BehaviourTreeNode> GetChildren () {
         return this.children;
+    }
+
+    public override void RemoveChild (BehaviourTreeNode child) {
+        this.children.Remove(child);
     }
 
     public enum Type {

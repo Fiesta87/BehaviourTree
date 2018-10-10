@@ -36,15 +36,15 @@ public class BehaviourTreeExecutionNode : BehaviourTreeNode {
         return result;
     }
 
-    public override string GetName () {
-        return "Execution : " + this.name;
-    }
-
     public override int ChildrenCount () {
         return 0;
     }
 
     public override List<BehaviourTreeNode> GetChildren () {
         return new List<BehaviourTreeNode>();
+    }
+
+    public override void RemoveChild (BehaviourTreeNode child) {
+        
     }
 }

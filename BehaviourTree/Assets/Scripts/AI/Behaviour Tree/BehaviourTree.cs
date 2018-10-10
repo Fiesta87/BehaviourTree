@@ -37,10 +37,6 @@ public class BehaviourTree : BehaviourTreeNode {
         return child.Tick();
     }
 
-	public override string GetName () {
-        return this.name;
-    }
-
     public override int ChildrenCount () {
         return this.child != null ? 1 : 0;
     }
@@ -50,6 +46,10 @@ public class BehaviourTree : BehaviourTreeNode {
 		List<BehaviourTreeNode> l = new List<BehaviourTreeNode>();
 		l.Add(child);
         return l;
+    }
+
+	public override void RemoveChild (BehaviourTreeNode child) {
+        this.child = null;
     }
 
 	public enum Status {
@@ -63,15 +63,11 @@ public class BehaviourTreeEditor : EditorWindow {
 
 	private SerializedObject behaviourTreeSerializedAsset;
 	private BehaviourTree behaviourTree;
-
-	//private BehaviourTreeNode newNode;
-	private BehaviourTreeNode newNodeParent;
+	private BehaviourTreeNode selectedNode;
 	private Vector2 nodeSize = new Vector2(180, 70);
 	private Vector2 rootPosition;
-
-	//private List<Rect> rects;
+	private Vector2 windowMovement;
 	private int nextWindowID;
-	private Dictionary<int, BehaviourTreeNode> idToNode;
 
 	private Color colorBehaviourTreeNode = new Color(0.5f, 0.5f, 0.5f, 1.0f);
 	private Color colorControlSelectorNode = new Color(0.0f, 0.8f, 0.0f, 1.0f);
@@ -79,6 +75,7 @@ public class BehaviourTreeEditor : EditorWindow {
 	private Color colorExecutionNode = new Color(1.0f, 0.0f, 1.0f, 1.0f);
 	private Color colorLine = new Color(0.5f, 0.5f, 0.5f, 1.0f);
 	private Color colorDefault = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+	private float zoomScale = 1.0f;
 
 	[MenuItem("Window/Behaviour Tree")]
 	public static void ShowWindow () {
@@ -90,21 +87,18 @@ public class BehaviourTreeEditor : EditorWindow {
 
 		this.behaviourTree = behaviourTree;
 
-		//this.newNode = null;
-
-		//this.rects = new List<Rect>();
-
 		if(this.behaviourTree != null) {
 
 			this.behaviourTree.Init();
 
-			this.rootPosition = new Vector2(this.position.width / 2 - nodeSize.x / 2, 10);
+			this.windowMovement = new Vector2(0.0f, 0.0f);
+
+			this.rootPosition = new Vector2(this.position.width / 2 - (nodeSize.x * zoomScale) / 2, 10);
 
 			this.behaviourTree.rect = new Rect (rootPosition.x, rootPosition.y, nodeSize.x, nodeSize.y);
 
 			if(this.behaviourTree.child != null) {
 				CreateNodeRect(this.behaviourTree.child, this.behaviourTree);
-				//this.behaviourTree.child.rect = new Rect (this.position.width / 2 - 90, 170, nodeSize.x, nodeSize.y);
 			}
 
 			// string filePath = "Assets/Datas/Behaviour Tree/" + this.behaviourTree.GetName();
@@ -122,65 +116,53 @@ public class BehaviourTreeEditor : EditorWindow {
 		}
 	}
 
-	// public static bool IsMouseOverWindow(EditorWindow window) {
-    // 	return mouseOverWindow && window.GetType().FullName == mouseOverWindow.ToString().Split('(', ')')[1];
-	// }
-
 	void OnGUI () {
 
-		//GUI.backgroundColor
-
-		nextWindowID = 0;
+		this.nextWindowID = 0;
 
 		if(this.behaviourTree != null) {
-
-			Handles.BeginGUI();
-
-		/*	Handles.DrawBezier(root.center, 
-			windowRect2.center, 
-			new Vector2(root.xMax + 50f,root.center.y), 
-			new Vector2(windowRect2.xMin - 50f,windowRect2.center.y),
-			Color.red,
-			null,
-			5f);*/
-
-			Handles.EndGUI();
 
 			BeginWindows();
 
 			GUI.color = colorBehaviourTreeNode;
 			
-			this.behaviourTree.rect.x = this.position.width / 2 - nodeSize.x / 2;
-			this.behaviourTree.rect.y = 10;
-			this.behaviourTree.rect = GUI.Window(GetNextWindowID(), this.behaviourTree.rect, RootWindowFunction, this.behaviourTree.GetName());
-
-			GUI.color = colorDefault;
-
-			// if(this.newNode != null) {
-
-			// 	SetColor(this.newNode);
-
-			// 	Rect newNodeRect = new Rect (this.position.width / 2 - 90, 330, 180, 70);
-			// 	newNodeRect = GUI.Window (1, newNodeRect, WindowFunction, this.newNode.GetName());
-			// }
+			this.behaviourTree.rect.x = this.position.width / 2 - (nodeSize.x * zoomScale) / 2 + this.windowMovement.x;
+			this.behaviourTree.rect.y = 10.0f + this.windowMovement.y;
+			this.behaviourTree.rect.width = nodeSize.x * zoomScale;
+			this.behaviourTree.rect.height = nodeSize.y * zoomScale;
+			int idRoot = GetNextWindowID();
+			this.behaviourTree.ID = idRoot;
+			this.behaviourTree.rect = GUI.Window(idRoot, this.behaviourTree.rect, RootWindowFunction, this.behaviourTree.name);
 
 			DrawChildrenRecursively(this.behaviourTree);
-			
-			if(this.behaviourTree.child != null) {
-
-				//SetColor(this.behaviourTree.child);
-
-				//CreateNodeRect(this.behaviourTree.child, this.behaviourTree);
-				//this.behaviourTree.child.rect = GUI.Window (2, this.behaviourTree.child.rect, ControlWindowFunction, this.behaviourTree.child.GetName());
-
-				
-			}
-
-			
 
 			EndWindows();
 
 			behaviourTreeSerializedAsset.ApplyModifiedProperties();
+
+			Event current = Event.current;
+
+			// zoom control with mouse wheel
+			if(current.type.Equals(EventType.ScrollWheel)) {
+				float zoomDelta = 0.1f;
+				zoomDelta = current.delta.y < 0 ? zoomDelta : -zoomDelta;
+				zoomScale += zoomDelta;
+				zoomScale = Mathf.Clamp(zoomScale, 0.2f, 1.5f);
+				current.Use();
+			}
+			
+			// movement with mouse left drag
+			else if(current.type.Equals(EventType.MouseDrag) && current.button == 0) {
+				this.windowMovement += current.delta;
+				current.Use();
+			}
+			
+			// reset zoom and movement with mouse middle click
+			else if(current.type.Equals(EventType.MouseDown) && current.button == 2) {
+				this.windowMovement = new Vector2(0.0f, 0.0f);
+				this.zoomScale = 1.0f;
+				current.Use();
+			}
 		}
     }
 
@@ -190,8 +172,31 @@ public class BehaviourTreeEditor : EditorWindow {
 
 		for(int i=0; i<node.ChildrenCount(); i++) {
 			CreateNodeRect(children[i], node);
+
+			Handles.BeginGUI();
+
+			Vector2 begin = new Vector2(node.rect.center.x, node.rect.yMax);
+			Vector2 end = new Vector2(children[i].rect.center.x, children[i].rect.yMin + 2.0f);
+
+			float xAverage = (node.rect.center.x + children[i].rect.center.x) / 2.0f;
+
+			Vector2 beginTangente = new Vector2(xAverage, children[i].rect.yMin);
+			Vector2 endTangente = new Vector2(xAverage, node.rect.yMax);
+
+			Handles.DrawBezier(begin, 
+			end, 
+			beginTangente, 
+			endTangente,
+			Color.red,
+			null,
+			5f);
+
+			Handles.EndGUI();
 		}
 
+		for(int i=0; i<node.ChildrenCount(); i++) {
+			DrawChildrenRecursively(children[i]);
+		}
 	}
 
 	void SetColor(BehaviourTreeNode node) {
@@ -222,22 +227,20 @@ public class BehaviourTreeEditor : EditorWindow {
 		BehaviourTreeControlNode newNode = (BehaviourTreeControlNode)ScriptableObject.CreateInstance("BehaviourTreeControlNode");
 		newNode.type = BehaviourTreeControlNode.Type.SELECTOR;
 		newNode.name = "New Selector Node";
-		// this.newNode = asset;
-		AddChildToParent(newNode, this.newNodeParent);
+		AddChildToParent(newNode, this.selectedNode);
 	}
 
 	void SequenceCallback () {
 		BehaviourTreeControlNode newNode = (BehaviourTreeControlNode)ScriptableObject.CreateInstance("BehaviourTreeControlNode");
 		newNode.type = BehaviourTreeControlNode.Type.SEQUENCE;
 		newNode.name = "New Sequence Node";
-		// this.newNode = asset;
-		AddChildToParent(newNode, this.newNodeParent);
+		AddChildToParent(newNode, this.selectedNode);
 	}
 
 	void ExecutionCallback () {
 		BehaviourTreeExecutionNode newNode = (BehaviourTreeExecutionNode)ScriptableObject.CreateInstance("BehaviourTreeExecutionNode");
 		newNode.name = "New Execution Node";
-		AddChildToParent(newNode, this.newNodeParent);
+		AddChildToParent(newNode, this.selectedNode);
 	}
 
 	void SubTreeCallback () {
@@ -245,16 +248,18 @@ public class BehaviourTreeEditor : EditorWindow {
 	}
 
 	void DeleteNodeAndChildrenCallback () {
-		Debug.Log("DeleteNodeAndChildrenCallback");
+		BehaviourTreeNode parent = FindParentOfNodeByID(this.behaviourTree, this.selectedNode.ID);
+
+		parent.RemoveChild(selectedNode);
 	}
 
 	void CreateNodeRect(BehaviourTreeNode node, BehaviourTreeNode nodeParent) {
 
 		SetColor(node);
 
-		Vector2 position = new Vector2(0.0f, nodeParent.rect.y + nodeSize.y + 50.0f);
+		Vector2 position = new Vector2(nodeParent.rect.x, nodeParent.rect.y + (nodeSize.y + 50.0f) * zoomScale);
 
-		node.rect = new Rect (position.x, position.y, nodeSize.x, nodeSize.y);
+		node.rect = new Rect (position.x, position.y, nodeSize.x * zoomScale, nodeSize.y * zoomScale);
 
 		GUI.WindowFunction func = ControlWindowFunction;
 
@@ -262,7 +267,8 @@ public class BehaviourTreeEditor : EditorWindow {
 			func = ExecutionWindowFunction;
 		}
 
-		node.rect = GUI.Window (GetNextWindowID(), node.rect, func, this.behaviourTree.child.GetName());
+		int idNode = GetNextWindowID();
+		node.ID = idNode;
 
 		int nbChildren = nodeParent.ChildrenCount();
 
@@ -270,9 +276,7 @@ public class BehaviourTreeEditor : EditorWindow {
 
 		float nodeSizeWithChildren = SizeOfNode(nodeParent);
 
-		//xStart = nodeParent.rect.x - ((float)(nbChildren-1) / 2.0f) * (nodeSize.x + 20.0f);
-
-		xStart = nodeParent.rect.x - nodeSizeWithChildren / 2.0f;
+		xStart = nodeParent.rect.x - (nodeSizeWithChildren - nodeSize.x * zoomScale) / 2.0f;
 
 		List<BehaviourTreeNode> children = nodeParent.GetChildren();
 
@@ -280,10 +284,11 @@ public class BehaviourTreeEditor : EditorWindow {
 			if(children[i].rect != null) {
 
 				float sizeCurrentChild = SizeOfNode(children[i]);
-				children[i].rect.x = xStart + sizeCurrentChild / 2.0f;
-				xStart += sizeCurrentChild;
+				children[i].rect.x = xStart + (sizeCurrentChild - nodeSize.x * zoomScale) / 2.0f;
+				xStart += sizeCurrentChild + 20.0f * zoomScale;
 			}
 		}
+		node.rect = GUI.Window (idNode, node.rect, func, node.name);
 	}
 
 	int GetNextWindowID () {
@@ -295,7 +300,7 @@ public class BehaviourTreeEditor : EditorWindow {
 		float size = 0.0f;
 
 		if(node is BehaviourTreeExecutionNode) {
-			return nodeSize.x;
+			return nodeSize.x * zoomScale;
 		}
 
 		int nbChildren = node.ChildrenCount();
@@ -305,8 +310,47 @@ public class BehaviourTreeEditor : EditorWindow {
 		for(int i=0; i<nbChildren; i++) {
 			size += SizeOfNode(children[i]);
 		}
+		size += Mathf.Max(20.0f * (nbChildren-1) * zoomScale, 0.0f);
 
-		return Mathf.Max(nodeSize.x, size);
+		return Mathf.Max(nodeSize.x * zoomScale, size);
+	}
+
+	BehaviourTreeNode FindNodeByID(BehaviourTreeNode node, int ID) {
+
+		if(node.ID.Equals(ID)) {
+			return node;
+		}
+		
+		foreach(BehaviourTreeNode child in node.GetChildren()) {
+			if(child.ID.Equals(ID)) {
+				return child;
+			}
+			BehaviourTreeNode recursiveResult = FindNodeByID(child, ID);
+			if(recursiveResult != null) {
+				return recursiveResult;
+			}
+		}
+
+		return null;
+	}
+
+	BehaviourTreeNode FindParentOfNodeByID(BehaviourTreeNode node, int ID) {
+
+		if(node.ID.Equals(ID)) {
+			return null;
+		}
+		
+		foreach(BehaviourTreeNode child in node.GetChildren()) {
+			if(child.ID.Equals(ID)) {
+				return node;
+			}
+			BehaviourTreeNode recursiveResult = FindParentOfNodeByID(child, ID);
+			if(recursiveResult != null) {
+				return recursiveResult;
+			}
+		}
+
+		return null;
 	}
 
 	void AddChildToParent (BehaviourTreeNode child, BehaviourTreeNode parent) {
@@ -314,7 +358,6 @@ public class BehaviourTreeEditor : EditorWindow {
 		if(parent is BehaviourTree) {
 
 			if(this.behaviourTree.child == null) {
-				//child.rect = new Rect (this.position.width / 2 - 90, 170, nodeSize.x, nodeSize.y);
 				this.behaviourTree.child = child;
 			}
 
@@ -324,11 +367,7 @@ public class BehaviourTreeEditor : EditorWindow {
 
 			controlNode.children.Add(child);
 
-		}/* else if(node is BehaviourTreeExecutionNode) {
-			GUI.color = colorExecutionNode;
-		} else {
-			GUI.color = colorDefault;
-		}*/
+		}
 	}
 
     void RootWindowFunction (int windowID) {
@@ -336,11 +375,10 @@ public class BehaviourTreeEditor : EditorWindow {
 		Event current = Event.current;
 		if(current.type == EventType.MouseDown && current.button == 1) {
 
-			this.newNodeParent = this.behaviourTree;
+			this.selectedNode = FindNodeByID(this.behaviourTree, windowID);
 			
 			GenericMenu menu = new GenericMenu();
 
-			//menu.AddDisabledItem(new GUIContent("I clicked on a thing"));
 			menu.AddItem(new GUIContent("New Selector Node"), false, SelectorCallback);
 			menu.AddItem(new GUIContent("New Sequence Node"), false, SequenceCallback);
 			menu.AddItem(new GUIContent("New Execution Node"), false, ExecutionCallback);
@@ -348,18 +386,17 @@ public class BehaviourTreeEditor : EditorWindow {
 			
 			current.Use();
 		}
-		
-        //GUI.DragWindow();
     }
 
     void ControlWindowFunction (int windowID) {
 
 		Event current = Event.current;
 		if(current.type == EventType.MouseDown && current.button == 1) {
+
+			this.selectedNode = FindNodeByID(this.behaviourTree, windowID);
 			
 			GenericMenu menu = new GenericMenu();
 
-			//menu.AddDisabledItem(new GUIContent("I clicked on a thing"));
 			menu.AddItem(new GUIContent("New Selector Node"), false, SelectorCallback);
 			menu.AddItem(new GUIContent("New Sequence Node"), false, SequenceCallback);
 			menu.AddItem(new GUIContent("New Execution Node"), false, ExecutionCallback);
@@ -369,14 +406,14 @@ public class BehaviourTreeEditor : EditorWindow {
 			
 			current.Use();
 		}
-		
-        //GUI.DragWindow();
     }
 
 	void ExecutionWindowFunction (int windowID) {
 
 		Event current = Event.current;
 		if(current.type == EventType.MouseDown && current.button == 1) {
+
+			this.selectedNode = FindNodeByID(this.behaviourTree, windowID);
 			
 			GenericMenu menu = new GenericMenu();
 
@@ -385,7 +422,5 @@ public class BehaviourTreeEditor : EditorWindow {
 			
 			current.Use();
 		}
-		
-        //GUI.DragWindow();
     }
 }
