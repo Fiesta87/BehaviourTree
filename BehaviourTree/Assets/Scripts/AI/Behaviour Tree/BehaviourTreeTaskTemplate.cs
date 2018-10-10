@@ -4,15 +4,19 @@ using UnityEngine;
 
 public class BehaviourTreeTaskTemplate : BehaviourTreeTask {
 	
-    public override BehaviourTree.Status Begin() {
-        return BehaviourTree.Status.SUCCESS;
+    public override void Begin() {
+        
     }
 
     public override BehaviourTree.Status Update() {
         return BehaviourTree.Status.SUCCESS;
     }
 
-    public override void Finish() {
+    public override void FinishSuccess() {
+		
+    }
+
+    public override void FinishFailure() {
 		
     }
 }

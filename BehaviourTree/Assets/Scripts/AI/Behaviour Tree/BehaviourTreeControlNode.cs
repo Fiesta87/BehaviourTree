@@ -4,8 +4,11 @@ using UnityEngine;
 
 public class BehaviourTreeControlNode : BehaviourTreeNode {
 
+    [SerializeField]
     public BehaviourTreeControlNode.Type type;
 
+    [HideInInspector]
+    [SerializeField]
     public List<BehaviourTreeNode> children;
 
     public BehaviourTreeControlNode () {

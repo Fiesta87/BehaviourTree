@@ -4,11 +4,12 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 
-public abstract class BehaviourTreeTask {
+public abstract class BehaviourTreeTask : MonoBehaviour {
 
-	public abstract BehaviourTree.Status Begin ();
+	public abstract void Begin ();
 	public abstract BehaviourTree.Status Update ();
-	public abstract void Finish ();
+	public abstract void FinishSuccess ();
+	public abstract void FinishFailure ();
 
 	[MenuItem("Assets/Create/Behaviour Tree/Task")]
     public static void CreateTask () {

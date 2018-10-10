@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BehaviourTreeExecutionNode : BehaviourTreeNode {
 
+    [SerializeField]
     public BehaviourTreeTask task;
 
     private bool firstTick;
@@ -20,17 +21,15 @@ public class BehaviourTreeExecutionNode : BehaviourTreeNode {
             
             this.firstTick = false;
             
-            result = task.Begin();
-
-            if(result != BehaviourTree.Status.RUNNING) {
-                return result;
-            }
+            task.Begin();
         }
 
         result = task.Update();
 
-        if(result != BehaviourTree.Status.RUNNING) {
-            task.Finish();
+        if(result == BehaviourTree.Status.SUCCESS) {
+            task.FinishSuccess();
+        } else if(result == BehaviourTree.Status.FAILURE) {
+            task.FinishFailure();
         }
 
         return result;

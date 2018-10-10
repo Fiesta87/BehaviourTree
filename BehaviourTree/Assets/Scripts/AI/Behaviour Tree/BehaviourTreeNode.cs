@@ -4,8 +4,13 @@ using UnityEngine;
 
 public abstract class BehaviourTreeNode : ScriptableObject {
 
+	[HideInInspector]
 	public Rect rect;
+	[HideInInspector]
+	[SerializeField]
 	public int ID;
+	[SerializeField]
+	public string displayedName;
 
 	public abstract void Init ();
 	public abstract BehaviourTree.Status Tick ();
