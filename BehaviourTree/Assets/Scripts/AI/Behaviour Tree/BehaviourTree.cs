@@ -14,8 +14,6 @@ public class BehaviourTree : BehaviourTreeNode {
 	[HideInInspector]
 	[SerializeField]
 	public int nextWindowID = 1;
-	[SerializeField]
-	public string typeHereToSave;
 
 	[OnOpenAsset(1)]
     public static bool OnOpenAsset (int instanceID, int line) {
@@ -68,7 +66,6 @@ public class BehaviourTree : BehaviourTreeNode {
 
 public class BehaviourTreeEditorWindow : EditorWindow {
 
-	public SerializedObject behaviourTreeSerializedAsset;
 	public static BehaviourTreeEditorWindow behaviourTreeEditorWindow;
 	private BehaviourTree behaviourTree;
 
@@ -94,21 +91,16 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 	}
 
 	public void OnEnable () {
-		Debug.Log("OnEnable");
 		InitEditor(null);
 	}
 	
 	public void InitEditor (BehaviourTree behaviourTree) {
-
-		Debug.Log("InitEditor");
 
 		if(behaviourTree != null) {
 			this.behaviourTree = behaviourTree;
 		}
 
 		if(this.behaviourTree != null) {
-
-			this.behaviourTreeSerializedAsset = new SerializedObject(this.behaviourTree);
 
 			this.behaviourTree.Init();
 
@@ -139,17 +131,16 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 			catch (IOException ex) {
 				Debug.Log(ex.Message);
 			}
+
+			SaveBehaviourTree();
 		}
 	}
 
 	void OnGUI () {
 
 		if(this.behaviourTree == null) {
-			Debug.Log("No Behaviour Tree to edit...");
 			return;
 		}
-
-		behaviourTreeSerializedAsset.Update();
 
 		BeginWindows();
 
@@ -165,10 +156,6 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		DrawChildrenRecursively(this.behaviourTree);
 
 		EndWindows();
-
-		behaviourTreeSerializedAsset.ApplyModifiedProperties();
-
-		// SerializeBehaviourTree();
 
 		Event current = Event.current;
 
@@ -195,58 +182,27 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		}
     }
 
-	// void SerializeBehaviourTree () {
+	void SaveBehaviourTree () {
+		SaveNodeAnChildren(this.behaviourTree);
+	}
 
-	// 	SerializedObject behaviourTreeSerializedAsset = new SerializedObject(this.behaviourTree);
+	void SaveNodeAnChildren (BehaviourTreeNode node) {
+		SerializedObject nodeSerializedAsset = new SerializedObject(node);
 
-	// 	behaviourTreeSerializedAsset.Update();
+		nodeSerializedAsset.Update();
 
-	// 	behaviourTreeSerializedAsset.FindProperty("child").exposedReferenceValue = this.behaviourTree.child;
+		SerializedProperty p = nodeSerializedAsset.FindProperty("displayedName");
 
-	// 	behaviourTreeSerializedAsset.FindProperty("nextWindowID").intValue = this.behaviourTree.nextWindowID;
+		p.stringValue = "";
 
-	// 	behaviourTreeSerializedAsset.FindProperty("test").stringValue = this.behaviourTree.test;
+		p.stringValue = node.displayedName;
 
-	// 	behaviourTreeSerializedAsset.ApplyModifiedProperties();
+		nodeSerializedAsset.ApplyModifiedProperties();
 
-	// 	SerializeNodesRecursively(this.behaviourTree.child);
-	// }
-
-	// void SerializeNodesRecursively (BehaviourTreeNode node) {
-
-	// 	if(node is BehaviourTreeControlNode) {
-	// 		SerializeControlNode((BehaviourTreeControlNode)node);
-	// 	} else if(node is BehaviourTreeExecutionNode) {
-	// 		SerializeExecutionNode((BehaviourTreeExecutionNode)node);
-	// 	} else {
-	// 		throw new IOException("ERROR SERIALIZATION : no type match");
-	// 	}
-	// 	foreach(BehaviourTreeNode child in node.GetChildren()) {
-	// 		SerializeNodesRecursively(child);
-	// 	}
-	// }
-
-	// void SerializeControlNode (BehaviourTreeControlNode node) {
-
-	// 	SerializedObject nodeSerializedAsset = new SerializedObject(node);
-
-	// 	nodeSerializedAsset.Update();
-
-	// 	nodeSerializedAsset.FindProperty("child").intValue = node.type;
-
-	// 	nodeSerializedAsset.FindProperty("nextWindowID").intValue = this.behaviourTree.nextWindowID;
-
-	// 	nodeSerializedAsset.FindProperty("test").stringValue = this.behaviourTree.test;
-
-	// 	nodeSerializedAsset.ApplyModifiedProperties();
-	// }
-
-	// void SerializeExecutionNode (BehaviourTreeExecutionNode node) {
-
-	// 	SerializedObject nodeSerializedAsset = new SerializedObject(node);
-
-	// 	nodeSerializedAsset.Update();
-	// }
+		foreach(BehaviourTreeNode child in node.GetChildren()) {
+			SaveNodeAnChildren(child);
+		}
+	}
 
 	void DrawChildrenRecursively (BehaviourTreeNode node) {
 
@@ -265,13 +221,7 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 			Vector2 beginTangente = new Vector2(xAverage, children[i].rect.yMin);
 			Vector2 endTangente = new Vector2(xAverage, node.rect.yMax);
 
-			Handles.DrawBezier(begin, 
-			end, 
-			beginTangente, 
-			endTangente,
-			Color.red,
-			null,
-			5f);
+			Handles.DrawBezier(begin, end, beginTangente, endTangente, colorLine, null, 5f);
 
 			Handles.EndGUI();
 		}
@@ -313,6 +263,7 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		AddNodeToAssets(newNode);
 		newNode.displayedName = "New Selector Node";
 		SelectNodeInInspector(newNode);
+		SaveBehaviourTree();
 	}
 
 	void SequenceCallback () {
@@ -323,6 +274,7 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		AddNodeToAssets(newNode);
 		newNode.displayedName = "New Sequence Node";
 		SelectNodeInInspector(newNode);
+		SaveBehaviourTree();
 	}
 
 	void ExecutionCallback () {
@@ -332,6 +284,7 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		AddNodeToAssets(newNode);
 		newNode.displayedName = "New Execution Node";
 		SelectNodeInInspector(newNode);
+		SaveBehaviourTree();
 	}
 
 	void SubTreeCallback () {
@@ -343,6 +296,7 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		parent.RemoveChild(selectedNode);
 		DeleteRecursivelyNodeAndChildrenAssets(selectedNode);
 		AssetDatabase.Refresh();
+		SaveBehaviourTree();
 	}
 
 	void DeleteRecursivelyNodeAndChildrenAssets (BehaviourTreeNode node) {
