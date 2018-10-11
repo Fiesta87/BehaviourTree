@@ -1,9 +1,9 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Behaviour Tree", menuName = "Behaviour Tree/Task Asset", order = 2)]
-public class BehaviourTreeTaskTemplate : BehaviourTreeTask {
+
+public class WalkTask : BehaviourTreeTask {
 	
     // Use this methode to init your task, this code will be executed only once when starting this task
     public override void Begin() {
