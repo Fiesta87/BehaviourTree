@@ -225,8 +225,8 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		newNode.type = BehaviourTreeControlNode.Type.SELECTOR;
 		newNode.ID = GetNextWindowID();
 		AddChildToParent(newNode, this.selectedNode);
-		AddNodeToAssets(newNode);
 		newNode.displayedName = "Selector";
+		AddNodeToAssets(newNode);
 		SelectNodeInInspector(newNode);
 		SaveBehaviourTree();
 	}
@@ -236,8 +236,8 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		newNode.type = BehaviourTreeControlNode.Type.SEQUENCE;
 		newNode.ID = GetNextWindowID();
 		AddChildToParent(newNode, this.selectedNode);
-		AddNodeToAssets(newNode);
 		newNode.displayedName = "Sequence";
+		AddNodeToAssets(newNode);
 		SelectNodeInInspector(newNode);
 		SaveBehaviourTree();
 	}
@@ -246,8 +246,8 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		BehaviourTreeExecutionNode newNode = (BehaviourTreeExecutionNode)ScriptableObject.CreateInstance("BehaviourTreeExecutionNode");
 		newNode.ID = GetNextWindowID();
 		AddChildToParent(newNode, this.selectedNode);
-		AddNodeToAssets(newNode);
 		newNode.displayedName = "Execution";
+		AddNodeToAssets(newNode);
 		SelectNodeInInspector(newNode);
 		SaveBehaviourTree();
 	}
@@ -265,7 +265,14 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 	}
 
 	void DeleteRecursivelyNodeAndChildrenAssets (BehaviourTreeNode node) {
+
 		AssetDatabase.DeleteAsset(assetsFilesPath + "/Node" + node.ID + ".asset");
+
+		if(node is BehaviourTreeExecutionNode && File.Exists(assetsFilesPath + "/Node" + node.ID + "Task.asset")) {
+
+			AssetDatabase.DeleteAsset(assetsFilesPath + "/Node" + node.ID + "Task.asset");
+		}
+
 		foreach(BehaviourTreeNode child in node.GetChildren()) {
 			DeleteRecursivelyNodeAndChildrenAssets(child);
 		}
@@ -498,6 +505,8 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 			
 			node.task = ScriptableObject.CreateInstance((taskScriptAsset as MonoScript).GetClass()) as BehaviourTreeTask;
 
+			AddTaskToAssets(node);
+
 			BehaviourTreeEditorWindow.SaveBehaviourTree();
 
 			current.Use();
@@ -509,6 +518,19 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 			current.Use();
 		}
     }
+
+	void AddTaskToAssets(BehaviourTreeExecutionNode node) {
+
+		string path = assetsFilesPath + "/Node" + node.ID + "Task.asset";
+
+		if(File.Exists(path)) {
+
+			AssetDatabase.DeleteAsset(path);
+		}
+
+		AssetDatabase.CreateAsset(node.task, path);
+		AssetDatabase.Refresh();
+	}
 
 	void SelectNodeInInspector (BehaviourTreeNode node) {
 		Object[] sel = new Object[1];

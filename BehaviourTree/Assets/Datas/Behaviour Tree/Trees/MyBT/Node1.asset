@@ -8,8 +8,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e47869269a7fb3940bbf0ed711658f0a, type: 3}
-  m_Name: Node2
+  m_Script: {fileID: 11500000, guid: 8a9b2b9cce5fdec49a09a9b2ad1afd64, type: 3}
+  m_Name: Node1
   m_EditorClassIdentifier: 
   rect:
     serializedVersion: 2
@@ -17,9 +17,6 @@ MonoBehaviour:
     y: 130
     width: 180
     height: 70
-  ID: 2
-  displayedName: Sequence
-  type: 1
-  children:
-  - {fileID: 11400000, guid: 7fc8ccaa8936e5846a3f92d04abe1b78, type: 2}
-  - {fileID: 11400000, guid: a789f9444ba9d024aa49475f97cfac61, type: 2}
+  ID: 1
+  displayedName: Execution
+  task: {fileID: 11400000, guid: a7e946297d1b8d143a3d11d3c22cb3fb, type: 2}

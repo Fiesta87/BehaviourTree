@@ -43,5 +43,5 @@
         ENDCG
     }
  
-    Fallback "Sprites/Diffuse"
+    Fallback "Sprites/Default"
 }
