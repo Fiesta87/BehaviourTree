@@ -26,25 +26,22 @@ public class CharacterMovementController : MonoBehaviour {
 	}
 	
 	void Update () {
-		this.animator.SetBool("Walk", this.IsMoving());
+		this.animator.SetBool("Walk", !this.IsAtDestination());
 		this.spriteRenderer.flipX = this.transform.forward.x >= 0.0f;
 	}
 
 	///	<summary>
 	///	The character will walk to the indicated position.
+	/// Return true if the destination is reachable, false otherwise.
 	///	</summary>
-	public void WalkTo (Vector3 position) {
-		this.MoveTo(position);
-	}
-
-	private void MoveTo (Vector3 position) {
-		this.navMeshAgent.SetDestination(position);
+	public bool WalkTo (Vector3 position) {
+		return this.navMeshAgent.SetDestination(position);
 	}
 
 	///	<summary>
-	///	Is this character currently on movement ?
+	///	Is this character currently arrived at his setted destination ?
 	///	</summary>
-	public bool IsMoving () {
-		return (this.navMeshAgent.destination - this.transform.position).magnitude > this.navMeshAgent.stoppingDistance;
+	public bool IsAtDestination () {
+		return (this.navMeshAgent.destination - this.transform.position).magnitude <= this.navMeshAgent.stoppingDistance;
 	}
 }

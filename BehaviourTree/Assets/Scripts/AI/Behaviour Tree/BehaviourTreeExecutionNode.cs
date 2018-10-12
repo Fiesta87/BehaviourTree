@@ -1,18 +1,24 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+// using UnityEditor;
 
 public class BehaviourTreeExecutionNode : BehaviourTreeNode {
 
+    // [SerializeField]
+    // public Object taskScriptAsset;
+
     [SerializeField]
+    // [HideInInspector]
     public BehaviourTreeTask task;
 
     private bool firstTick;
 
-    public override void Init () {
+    public override void Init (BehaviourTreeAgent agent) {
         this.firstTick = true;
+        this.task.Init(agent);
     }
-
+    
     public override BehaviourTree.Status Tick() {
         
         BehaviourTree.Status result;
@@ -21,15 +27,15 @@ public class BehaviourTreeExecutionNode : BehaviourTreeNode {
             
             this.firstTick = false;
             
-            task.Begin();
+            this.task.Begin();
         }
 
-        result = task.Update();
+        result = this.task.Update();
 
         if(result == BehaviourTree.Status.SUCCESS) {
-            task.FinishSuccess();
+            this.task.FinishSuccess();
         } else if(result == BehaviourTree.Status.FAILURE) {
-            task.FinishFailure();
+            this.task.FinishFailure();
         }
 
         return result;

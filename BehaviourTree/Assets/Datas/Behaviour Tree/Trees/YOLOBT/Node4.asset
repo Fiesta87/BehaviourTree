@@ -8,18 +8,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e47869269a7fb3940bbf0ed711658f0a, type: 3}
-  m_Name: Node1
+  m_Script: {fileID: 11500000, guid: 8a9b2b9cce5fdec49a09a9b2ad1afd64, type: 3}
+  m_Name: Node4
   m_EditorClassIdentifier: 
   rect:
     serializedVersion: 2
-    x: 460
-    y: 130
+    x: 527
+    y: 250
     width: 180
     height: 70
-  ID: 1
-  displayedName: Walk And ComeBack
-  type: 1
-  children:
-  - {fileID: 11400000, guid: e1b01d0d5bc2cef42a7e9f86e322bbe5, type: 2}
-  - {fileID: 11400000, guid: 07954f461c311be408d0724e3fb5e4c6, type: 2}
+  ID: 4
+  displayedName: Execution
+  task: {fileID: 0}

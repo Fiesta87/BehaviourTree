@@ -15,10 +15,10 @@ public class BehaviourTreeControlNode : BehaviourTreeNode {
         this.children = new List<BehaviourTreeNode>();
     }
 
-    public override void Init () {
+    public override void Init (BehaviourTreeAgent agent) {
         foreach(BehaviourTreeNode child in children) {
 
-            child.Init();
+            child.Init(agent);
         }
     }
 
@@ -40,12 +40,12 @@ public class BehaviourTreeControlNode : BehaviourTreeNode {
 
             BehaviourTree.Status childStatus = child.Tick();
 
-            if(childStatus != BehaviourTree.Status.SUCCESS) {
+            if(childStatus != BehaviourTree.Status.FAILURE) {
                 return childStatus;
             }
         }
 
-        return BehaviourTree.Status.SUCCESS;
+        return BehaviourTree.Status.FAILURE;
     }
 
     private BehaviourTree.Status SequenceTick () {
@@ -54,12 +54,12 @@ public class BehaviourTreeControlNode : BehaviourTreeNode {
 
             BehaviourTree.Status childStatus = child.Tick();
 
-            if(childStatus != BehaviourTree.Status.FAILURE) {
+            if(childStatus != BehaviourTree.Status.SUCCESS) {
                 return childStatus;
             }
         }
 
-        return BehaviourTree.Status.FAILURE;
+        return BehaviourTree.Status.SUCCESS;
     }
 
     public override int ChildrenCount () {

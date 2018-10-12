@@ -12,7 +12,7 @@ public abstract class BehaviourTreeNode : ScriptableObject {
 	[SerializeField]
 	public string displayedName;
 
-	public abstract void Init ();
+	public abstract void Init (BehaviourTreeAgent agent);
 	public abstract BehaviourTree.Status Tick ();
 	public abstract int ChildrenCount ();
 	public abstract List<BehaviourTreeNode> GetChildren ();
