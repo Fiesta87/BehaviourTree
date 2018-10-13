@@ -1,0 +1,2 @@
+This is a discovery project about implementing a behaviour tree system and his editor in Unity.
+This code is not intended to be efficient in production as it is my first experience with behaviour trees and custom editors as an extention of Unity.
