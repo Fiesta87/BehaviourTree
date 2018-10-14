@@ -2,10 +2,12 @@ This list is not ordered by priority, it is just idea of future development ...
 
 Add decorator nodes.
 
-Add a memory context to the tree when executing.
-
 Add build-in execution nodes to manage the tree execution (eg. SetContextVariable).
 
 Add a sub-tree node.
 
+Devlope the test game to create a test environment for NPCs controlled by a behaviour tree.
+
 Optimise the tree execution by saving the current active/running node.
+
+Update editor visual for execution node.

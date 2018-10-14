@@ -9,11 +9,33 @@ public abstract class BehaviourTreeTask : ScriptableObject {
 
     protected BehaviourTreeAgent agent;
 
+    [SerializeField]
+
     public void Init (BehaviourTreeAgent agent) {
-        Debug.Log("BehaviourTreeTask Init");
         this.agent = agent;
     }
 
+    public void SetInputContext (BehaviourTreeExecutionNode node) {
+
+        foreach(System.Collections.Generic.KeyValuePair<string, string> record in node.contextLink) {
+            
+            if(record.Key.StartsWith("in_")) {
+                PropertyReader.setValue(this, record.Key, this.agent.GetContext()[record.Value]);
+            }
+        }
+    }
+
+    public void SetOutputContext (BehaviourTreeExecutionNode node) {
+
+        foreach(System.Collections.Generic.KeyValuePair<string, string> record in node.contextLink) {
+            
+            if(record.Key.StartsWith("out_")) {
+                this.agent.GetContext()[record.Value] = PropertyReader.getValue(this, record.Key);
+            }
+        }
+    }
+
+    public abstract void InitOnStart ();
 	public abstract void Begin ();
 	public abstract BehaviourTree.Status Update ();
 	public abstract void FinishSuccess ();

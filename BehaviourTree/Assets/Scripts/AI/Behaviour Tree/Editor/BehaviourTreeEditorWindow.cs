@@ -475,7 +475,28 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 
 	void ExecutionWindowFunction (int windowID) {
 
-		GUILayout.Label("TEST");
+		BehaviourTreeExecutionNode node = (BehaviourTreeExecutionNode)FindNodeByID(BehaviourTreeEditorWindow.behaviourTree, windowID);
+
+		if(node.task != null) {
+
+			PropertyReader.Variable[] variables = PropertyReader.getFields(node.task.GetType());
+
+			GUILayout.Label("INPUT");
+
+			foreach(PropertyReader.Variable variable in variables) {
+				if(variable.name.StartsWith("in_")) {
+					AddContextField(node, variable);
+				}
+			}
+
+			GUILayout.Label("OUTPUT");
+
+			foreach(PropertyReader.Variable variable in variables) {
+				if(variable.name.StartsWith("out_")) {
+					AddContextField(node, variable);
+				}
+			}
+		}
 
 		Event current = Event.current;
 
@@ -486,7 +507,7 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		
 		if(current.type == EventType.MouseDown && current.button == 1) {
 
-			this.selectedNode = (BehaviourTreeExecutionNode)FindNodeByID(BehaviourTreeEditorWindow.behaviourTree, windowID);
+			this.selectedNode = node;
 			
 			GenericMenu menu = new GenericMenu();
 
@@ -499,11 +520,19 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 
 		} else if(current.type.Equals(EventType.DragExited)) {
 
-			BehaviourTreeExecutionNode node = (BehaviourTreeExecutionNode)FindNodeByID(BehaviourTreeEditorWindow.behaviourTree, windowID);
-
 			Object taskScriptAsset = DragAndDrop.objectReferences[0];
 			
 			node.task = ScriptableObject.CreateInstance((taskScriptAsset as MonoScript).GetClass()) as BehaviourTreeTask;
+
+			node.contextLink.Clear();
+
+			PropertyReader.Variable[] variables = PropertyReader.getFields(node.task.GetType());
+
+			foreach(PropertyReader.Variable variable in variables) {
+				if(variable.name.StartsWith("in_") || variable.name.StartsWith("out_")) {
+					node.contextLink.Add(variable.name, "");
+				}
+			}
 
 			AddTaskToAssets(node);
 
@@ -518,6 +547,68 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 			current.Use();
 		}
     }
+
+	void AddContextField(BehaviourTreeExecutionNode node, PropertyReader.Variable variable) {
+		
+		GUILayout.BeginHorizontal();
+
+			// string initialValue = (string)PropertyReader.getValue(node.task, variable.name);
+
+			string initialValue = node.contextLink[variable.name];
+
+			GUI.color = Color.black;
+			GUILayout.Label(variable.name.Split('_')[1]);
+
+			GUI.color = Color.white;
+			string value = GUILayout.TextField(initialValue);
+
+			// PropertyReader.setValue(node.task, variable.name, value);
+
+			node.contextLink[variable.name] = value;
+
+			if( value != initialValue) {
+				SaveNodeAnChildren(node);
+				// SaveTask(node.task);
+			}
+			
+		GUILayout.EndHorizontal();
+
+		// if(variable.type.Equals(typeof(string))) {
+
+		// 	GUILayout.BeginHorizontal();
+
+		// 		string initialValue = (string)PropertyReader.getValue(node.task, variable.name);
+
+		// 		GUI.color = Color.black;
+		// 		GUILayout.Label(variable.name);
+
+		// 		GUI.color = Color.white;
+		// 		string value = GUILayout.TextField(initialValue);
+		// 		PropertyReader.setValue(node.task, variable.name, value);
+
+		// 		if( value != initialValue) {
+		// 			SaveTask(node.task);
+		// 		}
+				
+		// 	GUILayout.EndHorizontal();
+
+		// } else {
+		// 	GUILayout.Label(variable.type + " is not supported.");
+		// }
+	}
+
+	// void SaveTask (BehaviourTreeTask task) {
+
+	// 	SerializedObject taskSerializedAsset = new SerializedObject(task);
+		
+	// 	taskSerializedAsset.Update();
+
+	// 	SerializedProperty p = taskSerializedAsset.FindProperty("dirty");
+
+	// 	p.intValue = p.intValue * -1;
+
+	// 	taskSerializedAsset.ApplyModifiedProperties();
+	// }
 
 	void AddTaskToAssets(BehaviourTreeExecutionNode node) {
 

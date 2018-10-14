@@ -11,7 +11,7 @@
     {
         Tags
         {
-            "Queue"="AlphaTest"
+            "Queue"="Transparent"
             "IgnoreProjector"="True"
             "RenderType"="TransparentCutout"
             "PreviewType"="Plane"

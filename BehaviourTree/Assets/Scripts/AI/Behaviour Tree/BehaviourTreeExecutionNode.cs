@@ -3,20 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 // using UnityEditor;
 
-public class BehaviourTreeExecutionNode : BehaviourTreeNode {
-
-    // [SerializeField]
-    // public Object taskScriptAsset;
+public class BehaviourTreeExecutionNode : BehaviourTreeNode, ISerializationCallbackReceiver {
 
     [SerializeField]
     // [HideInInspector]
     public BehaviourTreeTask task;
 
+    public Dictionary<string, string> contextLink = new Dictionary<string, string>();
+
+    [SerializeField]
+    public List<string> contextLinkKeys = new List<string>();
+
+    [SerializeField]
+    public List<string> contextLinkValues = new List<string>();
+
     private bool firstTick;
+    private BehaviourTreeAgent agent;
 
     public override void Init (BehaviourTreeAgent agent) {
         this.firstTick = true;
+        this.agent = agent;
         this.task.Init(agent);
+        this.task.InitOnStart();
     }
     
     public override BehaviourTree.Status Tick() {
@@ -27,6 +35,8 @@ public class BehaviourTreeExecutionNode : BehaviourTreeNode {
             
             this.firstTick = false;
             
+            this.task.SetInputContext(this);
+
             this.task.Begin();
         }
 
@@ -34,8 +44,12 @@ public class BehaviourTreeExecutionNode : BehaviourTreeNode {
 
         if(result == BehaviourTree.Status.SUCCESS) {
             this.task.FinishSuccess();
+            this.task.SetOutputContext(this);
+            this.firstTick = true;
         } else if(result == BehaviourTree.Status.FAILURE) {
             this.task.FinishFailure();
+            this.task.SetOutputContext(this);
+            this.firstTick = true;
         }
 
         return result;
@@ -51,5 +65,26 @@ public class BehaviourTreeExecutionNode : BehaviourTreeNode {
 
     public override void RemoveChild (BehaviourTreeNode child) {
         
+    }
+
+    public void OnBeforeSerialize () {
+
+        contextLinkKeys.Clear();
+        contextLinkValues.Clear();
+
+        foreach(System.Collections.Generic.KeyValuePair<string, string> record in contextLink) {
+
+            contextLinkKeys.Add(record.Key);
+            contextLinkValues.Add(record.Value);
+        }
+    }
+
+    public void OnAfterDeserialize () {
+
+        contextLink = new Dictionary<string, string>();
+
+        for(int i=0; i != Mathf.Min(contextLinkKeys.Count, contextLinkValues.Count); i++) {
+            contextLink.Add(contextLinkKeys[i], contextLinkValues[i]);
+        } 
     }
 }

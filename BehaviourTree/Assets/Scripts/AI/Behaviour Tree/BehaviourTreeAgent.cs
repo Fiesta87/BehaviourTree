@@ -5,9 +5,12 @@ using UnityEngine;
 public class BehaviourTreeAgent : MonoBehaviour {
 
 	public BehaviourTree behaviourTree;
-	public string test;
 
-	// private List<BehaviourTreeTask> tasks;
+	private Dictionary<string, object> context;
+
+	void Awake () {
+		this.context = new Dictionary<string, object>();
+	}
 
 	void Start () {
 		if(this.behaviourTree != null){
@@ -20,5 +23,9 @@ public class BehaviourTreeAgent : MonoBehaviour {
 			// Debug.Log(this.behaviourTree.Tick());
 			this.behaviourTree.Tick();
 		}
+	}
+
+	public Dictionary<string, object> GetContext () {
+		return this.context;
 	}
 }

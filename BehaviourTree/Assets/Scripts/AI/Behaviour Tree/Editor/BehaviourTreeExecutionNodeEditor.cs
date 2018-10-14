@@ -18,19 +18,19 @@ public class BehaviourTreeExecutionNodeEditor : Editor {
 		// 	BehaviourTreeEditorWindow.SaveBehaviourTree();
 		// }
 
-		DragAndDrop.visualMode = DragAndDropVisualMode.Generic;
+		// DragAndDrop.visualMode = DragAndDropVisualMode.Generic;
 
-		Event current = Event.current;
+		// Event current = Event.current;
 
-		if(current.type.Equals(EventType.DragExited)) {
+		// if(current.type.Equals(EventType.DragExited)) {
 
-			Object taskScriptAsset = DragAndDrop.objectReferences[0];
+		// 	Object taskScriptAsset = DragAndDrop.objectReferences[0];
 			
-            node.task = ScriptableObject.CreateInstance((taskScriptAsset as MonoScript).GetClass()) as BehaviourTreeTask;
+        //     node.task = ScriptableObject.CreateInstance((taskScriptAsset as MonoScript).GetClass()) as BehaviourTreeTask;
 
-			BehaviourTreeEditorWindow.SaveBehaviourTree();
+		// 	BehaviourTreeEditorWindow.SaveBehaviourTree();
 
-			current.Use();
-		}
+		// 	current.Use();
+		// }
 	}
 }

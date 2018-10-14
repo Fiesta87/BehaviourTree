@@ -8,15 +8,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a9b2b9cce5fdec49a09a9b2ad1afd64, type: 3}
-  m_Name: Node1
+  m_Script: {fileID: 11500000, guid: 470cc6adc2fb8cc4194c139d0897c76b, type: 3}
+  m_Name: FollowPlayer
   m_EditorClassIdentifier: 
   rect:
     serializedVersion: 2
-    x: 427
-    y: 130
-    width: 180
-    height: 70
-  ID: 1
-  displayedName: Execution
-  task: {fileID: 11400000, guid: a7e946297d1b8d143a3d11d3c22cb3fb, type: 2}
+    x: 0
+    y: 0
+    width: 0
+    height: 0
+  ID: 0
+  displayedName: 
+  child: {fileID: 0}
+  nextWindowID: 1
