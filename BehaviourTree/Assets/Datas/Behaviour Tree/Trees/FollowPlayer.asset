@@ -13,11 +13,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rect:
     serializedVersion: 2
-    x: 0
-    y: 0
-    width: 0
-    height: 0
+    x: 400
+    y: 10
+    width: 234.00002
+    height: 91.00001
   ID: 0
-  displayedName: 
-  child: {fileID: 0}
-  nextWindowID: 1
+  displayedName: FollowPlayer
+  child: {fileID: 11400000, guid: f262276ca044d1946bf1e6b0194c8ff6, type: 2}
+  nextWindowID: 4

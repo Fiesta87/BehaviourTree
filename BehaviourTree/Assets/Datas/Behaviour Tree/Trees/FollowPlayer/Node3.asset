@@ -13,12 +13,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rect:
     serializedVersion: 2
-    x: 0
-    y: 0
-    width: 0
-    height: 0
+    x: 530
+    y: 322.00003
+    width: 234.00002
+    height: 91.00001
   ID: 3
   displayedName: Execution
-  task: {fileID: 0}
-  contextLinkKeys: []
-  contextLinkValues: []
+  task: {fileID: 11400000, guid: b162be65a15d0ee418c955a5f14e65ba, type: 2}
+  contextLinkKeys:
+  - in_postion
+  contextLinkValues:
+  - playerPosition
