@@ -55,7 +55,7 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 	}
 
 	public void OnEnable () {
-		Debug.Log("OnEnable");
+		
 		if(behaviourTreeSerializedSaved == null) {
 			behaviourTreeSerializedSaved = BehaviourTreeEditorWindow.behaviourTree;
 		}
@@ -63,7 +63,7 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 	}
 
 	public void OnDisable () {
-		Debug.Log("OnDisable");
+		
 		behaviourTreeSerializedSaved = BehaviourTreeEditorWindow.behaviourTree;
 	}
 	
@@ -238,7 +238,7 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		AddChildToParent(newNode, this.selectedNode);
 		newNode.displayedName = "Selector";
 		AddNodeToAssets(newNode);
-		SelectNodeInInspector(newNode);
+		// SelectNodeInInspector(newNode);
 		SaveBehaviourTree();
 	}
 
@@ -249,7 +249,7 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		AddChildToParent(newNode, this.selectedNode);
 		newNode.displayedName = "Sequence";
 		AddNodeToAssets(newNode);
-		SelectNodeInInspector(newNode);
+		// SelectNodeInInspector(newNode);
 		SaveBehaviourTree();
 	}
 
@@ -259,7 +259,7 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		AddChildToParent(newNode, this.selectedNode);
 		newNode.displayedName = "Execution";
 		AddNodeToAssets(newNode);
-		SelectNodeInInspector(newNode);
+		// SelectNodeInInspector(newNode);
 		SaveBehaviourTree();
 	}
 
@@ -449,7 +449,7 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 
 		} else if(current.type == EventType.MouseDown && current.button == 0) {
 
-			SelectNodeInInspector(FindNodeByID(BehaviourTreeEditorWindow.behaviourTree, windowID));
+			// SelectNodeInInspector(FindNodeByID(BehaviourTreeEditorWindow.behaviourTree, windowID));
 
 			current.Use();
 		}
@@ -478,7 +478,7 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 
 		} else if(current.type == EventType.MouseDown && current.button == 0) {
 
-			SelectNodeInInspector(FindNodeByID(BehaviourTreeEditorWindow.behaviourTree, windowID));
+			// SelectNodeInInspector(FindNodeByID(BehaviourTreeEditorWindow.behaviourTree, windowID));
 
 			current.Use();
 		}
@@ -577,7 +577,7 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 
 		} else if(current.type == EventType.MouseDown && current.button == 0) {
 			
-			SelectNodeInInspector(FindNodeByID(BehaviourTreeEditorWindow.behaviourTree, windowID));
+			// SelectNodeInInspector(FindNodeByID(BehaviourTreeEditorWindow.behaviourTree, windowID));
 
 			current.Use();
 		}
