@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class WalkToTask : BehaviourTreeTask {
 
-    public Vector3 in_postion;
+    public Vector3 in_position;
 
     private CharacterMovementController characterMovementController;
     private bool canWalkToDestination;
@@ -17,7 +17,7 @@ public class WalkToTask : BehaviourTreeTask {
 	
     // Use this methode to init your task, this code will be executed every time a parent start this task.
     public override void Begin () {
-        this.canWalkToDestination = this.characterMovementController.WalkTo(in_postion);
+        this.canWalkToDestination = this.characterMovementController.WalkTo(in_position);
     }
 
     // Use this methode to perform your task

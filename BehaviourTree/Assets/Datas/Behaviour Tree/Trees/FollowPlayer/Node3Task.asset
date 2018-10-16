@@ -11,4 +11,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a474375e7793a04f9c8bbc2aa119029, type: 3}
   m_Name: Node3Task
   m_EditorClassIdentifier: 
-  in_postion: {x: 0, y: 0, z: 0}
+  in_position: {x: 0, y: 0, z: 0}

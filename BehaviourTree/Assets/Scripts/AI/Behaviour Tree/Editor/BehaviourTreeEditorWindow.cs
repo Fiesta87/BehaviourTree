@@ -12,6 +12,9 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 	public static BehaviourTreeEditorWindow behaviourTreeEditorWindow;
 	public static BehaviourTree behaviourTree;
 
+	[SerializeField]
+	public BehaviourTree behaviourTreeSerializedSaved;
+
 	private string assetsFilesPath;
 	private BehaviourTreeNode selectedNode;
 	private Vector2 nodeSize = new Vector2(180, 70);
@@ -46,12 +49,22 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 
 	[MenuItem("Window/Behaviour Tree")]
 	public static void ShowWindow () {
+		
 		behaviourTreeEditorWindow = GetWindow<BehaviourTreeEditorWindow>(false, "BehaviourTree", true);
-		behaviourTreeEditorWindow.InitEditor(null);
+		behaviourTreeEditorWindow.InitEditor(BehaviourTreeEditorWindow.behaviourTree);
 	}
 
 	public void OnEnable () {
-		InitEditor(null);
+		Debug.Log("OnEnable");
+		if(behaviourTreeSerializedSaved == null) {
+			behaviourTreeSerializedSaved = BehaviourTreeEditorWindow.behaviourTree;
+		}
+		InitEditor(behaviourTreeSerializedSaved);
+	}
+
+	public void OnDisable () {
+		Debug.Log("OnDisable");
+		behaviourTreeSerializedSaved = BehaviourTreeEditorWindow.behaviourTree;
 	}
 	
 	public void InitEditor (BehaviourTree behaviourTree) {
@@ -61,8 +74,6 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		}
 
 		if(BehaviourTreeEditorWindow.behaviourTree != null) {
-
-			// BehaviourTreeEditorWindow.behaviourTree.Init();
 
 			BehaviourTreeEditorWindow.behaviourTree.ID = 0;
 
@@ -501,8 +512,16 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		Event current = Event.current;
 
 		if(current.mousePosition.x >= 0.0f && current.mousePosition.x <= nodeSize.x * zoomScale &&
-		current.mousePosition.y >= 0.0f && current.mousePosition.y <= nodeSize.y * zoomScale) {
-			DragAndDrop.visualMode = DragAndDropVisualMode.Link;
+		current.mousePosition.y >= 0.0f && current.mousePosition.y <= nodeSize.y * zoomScale &&
+		DragAndDrop.objectReferences.Length == 1) {
+
+			Object taskScriptAsset = DragAndDrop.objectReferences[0];
+
+			if( ! (taskScriptAsset is MonoScript)) {
+				DragAndDrop.visualMode = DragAndDropVisualMode.Rejected;
+			} else {
+				DragAndDrop.visualMode = DragAndDropVisualMode.Link;
+			}
 		}
 		
 		if(current.type == EventType.MouseDown && current.button == 1) {
@@ -521,8 +540,22 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		} else if(current.type.Equals(EventType.DragExited)) {
 
 			Object taskScriptAsset = DragAndDrop.objectReferences[0];
+
+			if( ! (taskScriptAsset is MonoScript)) {
+				current.Use();
+				return;
+			}
+
+			System.Type taskType = (taskScriptAsset as MonoScript).GetClass();
+
+			ScriptableObject so = ScriptableObject.CreateInstance(taskType);
+
+			if( ! (so is BehaviourTreeTask)) {
+				current.Use();
+				return;
+			}
 			
-			node.task = ScriptableObject.CreateInstance((taskScriptAsset as MonoScript).GetClass()) as BehaviourTreeTask;
+			node.task = so as BehaviourTreeTask;
 
 			node.contextLink.Clear();
 
@@ -530,9 +563,11 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 
 			foreach(PropertyReader.Variable variable in variables) {
 				if(variable.name.StartsWith("in_") || variable.name.StartsWith("out_")) {
-					node.contextLink.Add(variable.name, "");
+					node.contextLink.Add(variable.name, variable.name.Split('_')[1]);
 				}
 			}
+
+			node.displayedName = taskType.ToString();
 
 			AddTaskToAssets(node);
 
@@ -552,21 +587,25 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		
 		GUILayout.BeginHorizontal();
 
-			// string initialValue = (string)PropertyReader.getValue(node.task, variable.name);
+			try {
+				string initialValue = node.contextLink[variable.name];
 
-			string initialValue = node.contextLink[variable.name];
+				GUI.color = Color.black;
+				GUILayout.Label(variable.name.Split('_')[1]);
 
-			GUI.color = Color.black;
-			GUILayout.Label(variable.name.Split('_')[1]);
+				GUI.color = Color.white;
+				string value = GUILayout.TextField(initialValue);
 
-			GUI.color = Color.white;
-			string value = GUILayout.TextField(initialValue);
+				node.contextLink[variable.name] = value;
 
-			node.contextLink[variable.name] = value;
-
-			if( value != initialValue) {
-				SaveNodeAnChildren(node);
+				if( value != initialValue) {
+					SaveNodeAnChildren(node);
+				}
+			} catch (KeyNotFoundException e) {
+				Debug.LogError("the key " + variable.name + " is not in the task context link array.");
+				Debug.LogException(e);
 			}
+			
 			
 		GUILayout.EndHorizontal();
 	}
