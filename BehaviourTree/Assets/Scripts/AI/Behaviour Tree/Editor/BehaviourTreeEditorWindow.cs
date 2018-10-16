@@ -562,53 +562,14 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 			GUI.color = Color.white;
 			string value = GUILayout.TextField(initialValue);
 
-			// PropertyReader.setValue(node.task, variable.name, value);
-
 			node.contextLink[variable.name] = value;
 
 			if( value != initialValue) {
 				SaveNodeAnChildren(node);
-				// SaveTask(node.task);
 			}
 			
 		GUILayout.EndHorizontal();
-
-		// if(variable.type.Equals(typeof(string))) {
-
-		// 	GUILayout.BeginHorizontal();
-
-		// 		string initialValue = (string)PropertyReader.getValue(node.task, variable.name);
-
-		// 		GUI.color = Color.black;
-		// 		GUILayout.Label(variable.name);
-
-		// 		GUI.color = Color.white;
-		// 		string value = GUILayout.TextField(initialValue);
-		// 		PropertyReader.setValue(node.task, variable.name, value);
-
-		// 		if( value != initialValue) {
-		// 			SaveTask(node.task);
-		// 		}
-				
-		// 	GUILayout.EndHorizontal();
-
-		// } else {
-		// 	GUILayout.Label(variable.type + " is not supported.");
-		// }
 	}
-
-	// void SaveTask (BehaviourTreeTask task) {
-
-	// 	SerializedObject taskSerializedAsset = new SerializedObject(task);
-		
-	// 	taskSerializedAsset.Update();
-
-	// 	SerializedProperty p = taskSerializedAsset.FindProperty("dirty");
-
-	// 	p.intValue = p.intValue * -1;
-
-	// 	taskSerializedAsset.ApplyModifiedProperties();
-	// }
 
 	void AddTaskToAssets(BehaviourTreeExecutionNode node) {
 
@@ -656,7 +617,9 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 
         public override void Action(int instanceId, string pathName, string resourceFile) {
 
-            File.Copy("Assets/Scripts/AI/Behaviour Tree/BehaviourTreeTaskTemplate.cs", pathName);
+			string templatePath = AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject((BehaviourTreeTaskTemplate)ScriptableObject.CreateInstance("BehaviourTreeTaskTemplate")));
+
+            File.Copy(templatePath, pathName);
 
             string text = File.ReadAllText(pathName);
 
