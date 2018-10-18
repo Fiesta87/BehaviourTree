@@ -11,11 +11,16 @@ public class BehaviourTreeControlNode : BehaviourTreeNode {
     [SerializeField]
     public List<BehaviourTreeNode> children;
 
+    private BehaviourTreeNode currentTickedNode;
+
     public BehaviourTreeControlNode () {
         this.children = new List<BehaviourTreeNode>();
     }
 
     public override void Init (BehaviourTreeAgent agent) {
+
+        this.currentTickedNode = null;
+
         foreach(BehaviourTreeNode child in children) {
 
             child.Init(agent);
@@ -38,12 +43,24 @@ public class BehaviourTreeControlNode : BehaviourTreeNode {
 
         foreach(BehaviourTreeNode child in children) {
 
-            BehaviourTree.Status childStatus = child.Tick();
+            if(this.currentTickedNode == null || this.currentTickedNode == child) {
+                
+                BehaviourTree.Status childStatus = child.Tick();
 
-            if(childStatus != BehaviourTree.Status.FAILURE) {
-                return childStatus;
+                if(childStatus == BehaviourTree.Status.RUNNING) {
+                    this.currentTickedNode = child;
+                    return childStatus;
+                }
+
+                if(childStatus == BehaviourTree.Status.SUCCESS) {
+
+                    this.currentTickedNode = null;
+                    return childStatus;
+                }
             }
         }
+
+        this.currentTickedNode = null;
 
         return BehaviourTree.Status.FAILURE;
     }
@@ -52,12 +69,23 @@ public class BehaviourTreeControlNode : BehaviourTreeNode {
 
         foreach(BehaviourTreeNode child in children) {
 
-            BehaviourTree.Status childStatus = child.Tick();
+            if(this.currentTickedNode == null || this.currentTickedNode == child) {
 
-            if(childStatus != BehaviourTree.Status.SUCCESS) {
-                return childStatus;
+                BehaviourTree.Status childStatus = child.Tick();
+
+                if(childStatus == BehaviourTree.Status.RUNNING) {
+                    this.currentTickedNode = child;
+                    return childStatus;
+                }
+
+                if(childStatus == BehaviourTree.Status.FAILURE) {
+                    this.currentTickedNode = null;
+                    return childStatus;
+                }
             }
         }
+
+        this.currentTickedNode = null;
 
         return BehaviourTree.Status.SUCCESS;
     }
