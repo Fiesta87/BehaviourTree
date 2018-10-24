@@ -4,12 +4,17 @@ using UnityEngine;
 
 public class BehaviourTreeControlNode : BehaviourTreeNode {
 
+    [HideInInspector]
     [SerializeField]
     public BehaviourTreeControlNode.Type type;
 
     [HideInInspector]
     [SerializeField]
     public List<BehaviourTreeNode> children;
+
+    [HideInInspector]
+    [SerializeField]
+    public bool startFromFirstNodeEachTick = false;
 
     private BehaviourTreeNode currentTickedNode;
 
@@ -29,14 +34,43 @@ public class BehaviourTreeControlNode : BehaviourTreeNode {
 
     public override BehaviourTree.Status Tick () {
 
-        switch(this.type) {
-
-            case BehaviourTreeControlNode.Type.SELECTOR: return SelectorTick();
-
-            case BehaviourTreeControlNode.Type.SEQUENCE: return SequenceTick();
-
-            default: return BehaviourTree.Status.FAILURE;
+        if(this.type == BehaviourTreeControlNode.Type.PARALLEL) {
+            return ParallelTick();
         }
+
+        if(this.startFromFirstNodeEachTick) {
+            switch(this.type) {
+
+                case BehaviourTreeControlNode.Type.SELECTOR: return SelectorTickFromFirstNode();
+
+                case BehaviourTreeControlNode.Type.SEQUENCE: return SequenceTickFromFirstNode();
+
+                default: return BehaviourTree.Status.FAILURE;
+            }
+        } else {
+            switch(this.type) {
+
+                case BehaviourTreeControlNode.Type.SELECTOR: return SelectorTick();
+
+                case BehaviourTreeControlNode.Type.SEQUENCE: return SequenceTick();
+
+                default: return BehaviourTree.Status.FAILURE;
+            }
+        }
+    }
+
+    private BehaviourTree.Status SelectorTickFromFirstNode () {
+
+        foreach(BehaviourTreeNode child in children) {
+
+            BehaviourTree.Status childStatus = child.Tick();
+
+            if(childStatus != BehaviourTree.Status.FAILURE) {
+                return childStatus;
+            }
+        }
+
+        return BehaviourTree.Status.FAILURE;
     }
 
     private BehaviourTree.Status SelectorTick () {
@@ -65,6 +99,20 @@ public class BehaviourTreeControlNode : BehaviourTreeNode {
         return BehaviourTree.Status.FAILURE;
     }
 
+    private BehaviourTree.Status SequenceTickFromFirstNode () {
+
+        foreach(BehaviourTreeNode child in children) {
+
+            BehaviourTree.Status childStatus = child.Tick();
+
+            if(childStatus != BehaviourTree.Status.SUCCESS) {
+                return childStatus;
+            }
+        }
+
+        return BehaviourTree.Status.SUCCESS;
+    }
+
     private BehaviourTree.Status SequenceTick () {
 
         foreach(BehaviourTreeNode child in children) {
@@ -90,6 +138,28 @@ public class BehaviourTreeControlNode : BehaviourTreeNode {
         return BehaviourTree.Status.SUCCESS;
     }
 
+    private BehaviourTree.Status ParallelTick () {
+        
+        bool firstChild = true;
+
+        foreach(BehaviourTreeNode child in children) {
+            
+            if(firstChild) {
+                firstChild = false;
+                BehaviourTree.Status firstChildStatus = child.Tick();
+
+                if(firstChildStatus != BehaviourTree.Status.RUNNING) {
+                    return firstChildStatus;
+                }
+            }
+            else {
+                child.Tick();
+            }
+        }
+
+        return BehaviourTree.Status.RUNNING;
+    }
+
     public override int ChildrenCount () {
         return children.Count;
     }
@@ -104,6 +174,7 @@ public class BehaviourTreeControlNode : BehaviourTreeNode {
 
     public enum Type {
         SELECTOR,
-        SEQUENCE
+        SEQUENCE,
+        PARALLEL
     }
 }

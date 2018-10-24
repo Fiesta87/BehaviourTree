@@ -9,18 +9,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8a9b2b9cce5fdec49a09a9b2ad1afd64, type: 3}
-  m_Name: Node5
+  m_Name: Node23
   m_EditorClassIdentifier: 
   rect:
     serializedVersion: 2
-    x: 308
-    y: 274
-    width: 198
-    height: 77
-  ID: 5
-  displayedName: FindPlayerTask
-  task: {fileID: 11400000, guid: e71e1487cc9113a469fde47bbb64b1c6, type: 2}
+    x: 521.5
+    y: 370
+    width: 270
+    height: 105
+  ID: 23
+  displayedName: WalkToTask
+  task: {fileID: 11400000, guid: a7353d774b994954581aba1cf51701e6, type: 2}
   contextLinkKeys:
-  - out_playerPosition
+  - in_position
   contextLinkValues:
   - playerPosition

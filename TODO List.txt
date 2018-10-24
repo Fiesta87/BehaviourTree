@@ -1,6 +1,6 @@
 This list is not ordered by priority, it is just idea of future development ...
 
-Add decorator nodes.
+Add debug/actif node option.
 
 Add build-in execution nodes to manage the tree execution (eg. SetContextVariable).
 	- CopyContextVariable
@@ -18,5 +18,3 @@ Player and NPC behaviour :
 	- communicate with others
 
 Update editor visual for execution node.
-
-Add parallel controle node.

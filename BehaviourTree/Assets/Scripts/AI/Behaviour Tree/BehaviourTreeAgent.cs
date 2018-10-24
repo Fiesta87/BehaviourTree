@@ -20,8 +20,10 @@ public class BehaviourTreeAgent : MonoBehaviour {
 	
 	void Update () {
 		if(this.behaviourTree != null){
-			// Debug.Log(this.behaviourTree.Tick());
-			this.behaviourTree.Tick();
+			
+			if(this.behaviourTree.Tick() == BehaviourTree.Status.FAILURE) {
+				Debug.Log(this.gameObject.name + " behaviour : " + this.behaviourTree.name + " return FAILURE.");
+			}
 		}
 	}
 

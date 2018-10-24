@@ -9,8 +9,6 @@ public abstract class BehaviourTreeTask : ScriptableObject {
 
     protected BehaviourTreeAgent agent;
 
-    [SerializeField]
-
     public void Init (BehaviourTreeAgent agent) {
         this.agent = agent;
     }
@@ -20,7 +18,13 @@ public abstract class BehaviourTreeTask : ScriptableObject {
         foreach(System.Collections.Generic.KeyValuePair<string, string> record in node.contextLink) {
             
             if(record.Key.StartsWith("in_")) {
-                PropertyReader.setValue(this, record.Key, this.agent.GetContext()[record.Value]);
+                try {
+                    PropertyReader.SetValue(this, record.Key, this.agent.GetContext()[record.Value]);
+                } catch (KeyNotFoundException e) {
+                    Debug.LogError("The variable " + record.Value + " doesn't exist in this context.");
+                    Debug.LogException(e);
+                }
+                
             }
         }
     }
@@ -30,7 +34,7 @@ public abstract class BehaviourTreeTask : ScriptableObject {
         foreach(System.Collections.Generic.KeyValuePair<string, string> record in node.contextLink) {
             
             if(record.Key.StartsWith("out_")) {
-                this.agent.GetContext()[record.Value] = PropertyReader.getValue(this, record.Key);
+                this.agent.GetContext()[record.Value] = PropertyReader.GetValue(this, record.Key);
             }
         }
     }

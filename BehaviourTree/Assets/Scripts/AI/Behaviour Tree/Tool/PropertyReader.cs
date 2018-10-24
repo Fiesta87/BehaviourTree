@@ -8,7 +8,7 @@ public class PropertyReader {
         public Type type;
     }
 
-    public static Variable[] getFields(Type type) {
+    public static Variable[] GetFields(Type type) {
 
         System.Reflection.FieldInfo[] fieldValues = type.GetFields();
 
@@ -22,12 +22,12 @@ public class PropertyReader {
         return result;
     }
 
-    public static object getValue(object obj, string name) {    
+    public static object GetValue(object obj, string name) {    
 
         return obj.GetType().GetField(name).GetValue(obj);
     }
 
-    public static void setValue(object obj, string name, object value) {
+    public static void SetValue(object obj, string name, object value) {
 
         obj.GetType().GetField(name).SetValue(obj, value);
     }

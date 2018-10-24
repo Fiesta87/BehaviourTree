@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class LogTask : BehaviourTreeTask {
 
-    public string in_text;
+    public string param_text;
 
     // Use this methode to setup the object link for your task, this code will be executed only once when the BehaviourTreeAgent Start methode is called.
     // eg. this.myCustomMonoBehaviourScript = this.agent.GetComponent<CustomMonoBehaviourScript>();
@@ -19,7 +19,7 @@ public class LogTask : BehaviourTreeTask {
 
     // Use this methode to perform your task
     public override BehaviourTree.Status Update () {
-        Debug.Log(in_text);
+        Debug.Log(param_text);
         return BehaviourTree.Status.SUCCESS;
     }
 
