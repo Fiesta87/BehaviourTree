@@ -22,6 +22,10 @@ public class BehaviourTree : BehaviourTreeNode {
         return child.Tick();
     }
 
+	public override void Kill () {
+        this.child.Kill();
+    }
+
     public override int ChildrenCount () {
         return this.child != null ? 1 : 0;
     }
@@ -38,6 +42,15 @@ public class BehaviourTree : BehaviourTreeNode {
 	public override void RemoveChild (BehaviourTreeNode child) {
         this.child = null;
     }
+
+	public override void AddChild (BehaviourTreeNode child) {
+		if(this.child == null) {
+			this.child = child;
+		}
+	}
+	public override void ReplaceChild (BehaviourTreeNode oldChild, BehaviourTreeNode newChild) {
+		this.child = newChild;
+	}
 
 	public enum Status {
 		RUNNING,

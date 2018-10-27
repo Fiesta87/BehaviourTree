@@ -53,4 +53,8 @@ public class WalkToTask : BehaviourTreeTask {
     public override void FinishFailure () {
 		
     }
+
+	public override void Kill () {
+        this.characterMovementController.Stop();
+    }
 }

@@ -30,4 +30,8 @@ public class LogTask : BehaviourTreeTask {
     public override void FinishFailure () {
 		
     }
+
+	public override void Kill () {
+        
+    }
 }

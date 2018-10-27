@@ -44,4 +44,5 @@ public abstract class BehaviourTreeTask : ScriptableObject {
 	public abstract BehaviourTree.Status Update ();
 	public abstract void FinishSuccess ();
 	public abstract void FinishFailure ();
+	public abstract void Kill ();
 }

@@ -27,4 +27,8 @@ public class BehaviourTreeTaskTemplate : BehaviourTreeTask {
     public override void FinishFailure () {
 		
     }
+
+	public override void Kill () {
+        
+    }
 }

@@ -26,8 +26,18 @@ public class BehaviourTreeDecoratorNode : BehaviourTreeNode {
 
             case BehaviourTreeDecoratorNode.Type.SUCCEEDER: return SucceederTick();
 
+            case BehaviourTreeDecoratorNode.Type.LOSER: return LoserTick();
+
+            case BehaviourTreeDecoratorNode.Type.IGNORE_SUCCESS: return IgnoreSuccessTick();
+
+            case BehaviourTreeDecoratorNode.Type.IGNORE_FAILURE: return IgnoreFailureTick();
+
             default: return BehaviourTree.Status.FAILURE;
         }
+    }
+
+	public override void Kill () {
+        this.child.Kill();
     }
 
     private BehaviourTree.Status InverterTick () {
@@ -50,6 +60,27 @@ public class BehaviourTreeDecoratorNode : BehaviourTreeNode {
         return BehaviourTree.Status.SUCCESS;
     }
 
+    private BehaviourTree.Status LoserTick () {
+        child.Tick();
+        return BehaviourTree.Status.FAILURE;
+    }
+
+    private BehaviourTree.Status IgnoreSuccessTick () {
+        BehaviourTree.Status result = child.Tick();
+        if(result == BehaviourTree.Status.SUCCESS) {
+            return BehaviourTree.Status.RUNNING;
+        }
+        return result;
+    }
+
+    private BehaviourTree.Status IgnoreFailureTick () {
+        BehaviourTree.Status result = child.Tick();
+        if(result == BehaviourTree.Status.FAILURE) {
+            return BehaviourTree.Status.RUNNING;
+        }
+        return result;
+    }
+
     public override int ChildrenCount () {
         return this.child != null ? 1 : 0;
     }
@@ -67,8 +98,21 @@ public class BehaviourTreeDecoratorNode : BehaviourTreeNode {
         this.child = null;
     }
 
+	public override void AddChild (BehaviourTreeNode child) {
+		if(this.child == null) {
+			this.child = child;
+		}
+	}
+    
+	public override void ReplaceChild (BehaviourTreeNode oldChild, BehaviourTreeNode newChild) {
+		this.child = newChild;
+	}
+
     public enum Type {
         INVERTER,
-        SUCCEEDER
+        SUCCEEDER,
+        LOSER,
+        IGNORE_SUCCESS,
+        IGNORE_FAILURE
     }
 }

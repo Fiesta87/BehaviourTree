@@ -34,50 +34,31 @@ public class BehaviourTreeControlNode : BehaviourTreeNode {
 
     public override BehaviourTree.Status Tick () {
 
-        if(this.type == BehaviourTreeControlNode.Type.PARALLEL) {
-            return ParallelTick();
-        }
+        switch(this.type) {
 
-        if(this.startFromFirstNodeEachTick) {
-            switch(this.type) {
+            case BehaviourTreeControlNode.Type.SELECTOR: return SelectorTick();
 
-                case BehaviourTreeControlNode.Type.SELECTOR: return SelectorTickFromFirstNode();
+            case BehaviourTreeControlNode.Type.SEQUENCE: return SequenceTick();
 
-                case BehaviourTreeControlNode.Type.SEQUENCE: return SequenceTickFromFirstNode();
+            case BehaviourTreeControlNode.Type.PARALLEL: return ParallelTick();
 
-                default: return BehaviourTree.Status.FAILURE;
-            }
-        } else {
-            switch(this.type) {
-
-                case BehaviourTreeControlNode.Type.SELECTOR: return SelectorTick();
-
-                case BehaviourTreeControlNode.Type.SEQUENCE: return SequenceTick();
-
-                default: return BehaviourTree.Status.FAILURE;
-            }
+            default: return BehaviourTree.Status.FAILURE;
         }
     }
 
-    private BehaviourTree.Status SelectorTickFromFirstNode () {
-
+	public override void Kill () {
         foreach(BehaviourTreeNode child in children) {
-
-            BehaviourTree.Status childStatus = child.Tick();
-
-            if(childStatus != BehaviourTree.Status.FAILURE) {
-                return childStatus;
+            if(this.type == BehaviourTreeControlNode.Type.PARALLEL || this.currentTickedNode == child) {
+                child.Kill();
             }
         }
-
-        return BehaviourTree.Status.FAILURE;
     }
 
     private BehaviourTree.Status SelectorTick () {
 
         foreach(BehaviourTreeNode child in children) {
 
-            if(this.currentTickedNode == null || this.currentTickedNode == child) {
+            if(this.startFromFirstNodeEachTick || this.currentTickedNode == null || this.currentTickedNode == child) {
                 
                 BehaviourTree.Status childStatus = child.Tick();
 
@@ -99,25 +80,11 @@ public class BehaviourTreeControlNode : BehaviourTreeNode {
         return BehaviourTree.Status.FAILURE;
     }
 
-    private BehaviourTree.Status SequenceTickFromFirstNode () {
-
-        foreach(BehaviourTreeNode child in children) {
-
-            BehaviourTree.Status childStatus = child.Tick();
-
-            if(childStatus != BehaviourTree.Status.SUCCESS) {
-                return childStatus;
-            }
-        }
-
-        return BehaviourTree.Status.SUCCESS;
-    }
-
     private BehaviourTree.Status SequenceTick () {
 
         foreach(BehaviourTreeNode child in children) {
 
-            if(this.currentTickedNode == null || this.currentTickedNode == child) {
+            if(this.startFromFirstNodeEachTick || this.currentTickedNode == null || this.currentTickedNode == child) {
 
                 BehaviourTree.Status childStatus = child.Tick();
 
@@ -171,6 +138,20 @@ public class BehaviourTreeControlNode : BehaviourTreeNode {
     public override void RemoveChild (BehaviourTreeNode child) {
         this.children.Remove(child);
     }
+
+	public override void AddChild (BehaviourTreeNode child) {
+        this.children.Add(child);
+	}
+	public override void ReplaceChild (BehaviourTreeNode oldChild, BehaviourTreeNode newChild) {
+
+		for(int i=0; i<this.children.Count; i++) {
+
+            if(this.children[i] == oldChild) {
+                this.children[i] = newChild;
+                return;
+            }
+        }
+	}
 
     public enum Type {
         SELECTOR,

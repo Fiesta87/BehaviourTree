@@ -13,10 +13,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rect:
     serializedVersion: 2
-    x: 221.5
-    y: 370
-    width: 270
-    height: 105
+    x: 291.5
+    y: 274
+    width: 198
+    height: 77
   ID: 24
   displayedName: FindPlayerTask
   task: {fileID: 11400000, guid: 94c6591f19d23424a9d9bdb96980cc30, type: 2}

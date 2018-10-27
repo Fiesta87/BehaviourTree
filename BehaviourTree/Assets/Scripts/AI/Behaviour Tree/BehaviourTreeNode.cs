@@ -14,8 +14,11 @@ public abstract class BehaviourTreeNode : ScriptableObject {
 
 	public abstract void Init (BehaviourTreeAgent agent);
 	public abstract BehaviourTree.Status Tick ();
+	public abstract void Kill ();
 	public abstract int ChildrenCount ();
 	public abstract List<BehaviourTreeNode> GetChildren ();
 	public abstract void RemoveChild (BehaviourTreeNode child);
+	public abstract void AddChild (BehaviourTreeNode child);
+	public abstract void ReplaceChild (BehaviourTreeNode oldChild, BehaviourTreeNode newChild);
 }
 

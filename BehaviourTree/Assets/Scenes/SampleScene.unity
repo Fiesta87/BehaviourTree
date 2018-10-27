@@ -222,7 +222,7 @@ Prefab:
         type: 2}
       propertyPath: behaviourTree
       value: 
-      objectReference: {fileID: 11400000, guid: e62701d50d459c945aa994c57c18ba53,
+      objectReference: {fileID: 11400000, guid: 1b3c18f08c9419046b89b6330835f953,
         type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c83314ffe79cc2f479cd45c537b31337, type: 2}

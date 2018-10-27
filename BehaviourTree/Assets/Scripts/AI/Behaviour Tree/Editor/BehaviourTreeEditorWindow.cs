@@ -18,8 +18,9 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 	private string assetsFilesPath;
 	private BehaviourTreeNode selectedNode;
 	private Vector2 nodeSize = new Vector2(180, 70);
-	private Vector2 rootPosition;
-	private Vector2 windowMovement;
+
+	[SerializeField]
+	public Vector2 windowMovement;
 	
 
 	private Color colorBehaviourTreeNode = new Color(0.5f, 0.5f, 0.5f, 1.0f);
@@ -30,7 +31,9 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 	private Color colorDecoratorNode = new Color(0.0f, 0.5f, 1.0f, 1.0f);
 	private Color colorLine = new Color(0.5f, 0.5f, 0.5f, 1.0f);
 	private Color colorDefault = new Color(1.0f, 1.0f, 1.0f, 1.0f);
-	private float zoomScale = 1.0f;
+
+	[SerializeField]
+	public float zoomScale = 1.0f;
 
     [OnOpenAsset(1)]
     public static bool OnOpenAsset (int instanceID, int line) {
@@ -85,9 +88,7 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 
 			this.windowMovement = new Vector2(0.0f, 0.0f);
 
-			this.rootPosition = new Vector2(this.position.width / 2 - (nodeSize.x * zoomScale) / 2, 10);
-
-			BehaviourTreeEditorWindow.behaviourTree.rect = new Rect (rootPosition.x, rootPosition.y, nodeSize.x, nodeSize.y);
+			BehaviourTreeEditorWindow.behaviourTree.rect = new Rect (0.0f, 0.0f, nodeSize.x, nodeSize.y);
 
 			// string filePath = AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(BehaviourTreeEditorWindow.behaviourTree)); // Assets/Scrpits/AI/BT/BT.cs
 
@@ -154,10 +155,26 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 			current.Use();
 		}
 
+		// suppr key
 		else if(current.type.Equals(EventType.KeyDown) && current.keyCode == KeyCode.Delete) {
 
 			if(this.selectedNode != null && this.selectedNode != BehaviourTreeEditorWindow.behaviourTree) {
-				DeleteNodeAndChildrenCallback();
+
+				if(this.selectedNode.ChildrenCount() == 0) {
+					if(EditorUtility.DisplayDialog("Delete node ?",
+						"Are you sure you want to delete the node " + this.selectedNode.displayedName + " ?",
+						"Yes, delete this node", "No")) {
+						
+						DeleteNodeCallback();
+					}
+				} else {
+					if(EditorUtility.DisplayDialog("Delete branch ?",
+						"Are you sure you want to delete the node " + this.selectedNode.displayedName + " and his children ?",
+						"Yes, delete this branch", "No")) {
+						
+						DeleteBranchCallback();
+					}
+				}
 			}
 			
 			current.Use();
@@ -245,60 +262,120 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		AssetDatabase.Refresh();
 	}
 
-	void ControlSelectorCallback () {
+	void NewChildControl (BehaviourTreeControlNode.Type type) {
 		BehaviourTreeControlNode newNode = (BehaviourTreeControlNode)ScriptableObject.CreateInstance("BehaviourTreeControlNode");
-		newNode.type = BehaviourTreeControlNode.Type.SELECTOR;
+		newNode.type = type;
 		newNode.ID = GetNextWindowID();
 		newNode.displayedName = newNode.type.ToString();
-		AddChildToParent(newNode, this.selectedNode);
+		this.selectedNode.AddChild(newNode);
+		// AddChildToParent(newNode, this.selectedNode);
 		AddNodeToAssets(newNode);
 		SaveBehaviourTree();
 	}
 
-	void ControlSequenceCallback () {
-		BehaviourTreeControlNode newNode = (BehaviourTreeControlNode)ScriptableObject.CreateInstance("BehaviourTreeControlNode");
-		newNode.type = BehaviourTreeControlNode.Type.SEQUENCE;
-		newNode.ID = GetNextWindowID();
-		newNode.displayedName = newNode.type.ToString();
-		AddChildToParent(newNode, this.selectedNode);
-		AddNodeToAssets(newNode);
-		SaveBehaviourTree();
+	void NewChildControlSelectorCallback () {
+		NewChildControl(BehaviourTreeControlNode.Type.SELECTOR);
 	}
 
-	void ControlParallelCallback () {
-		BehaviourTreeControlNode newNode = (BehaviourTreeControlNode)ScriptableObject.CreateInstance("BehaviourTreeControlNode");
-		newNode.type = BehaviourTreeControlNode.Type.PARALLEL;
-		newNode.ID = GetNextWindowID();
-		newNode.displayedName = newNode.type.ToString();
-		AddChildToParent(newNode, this.selectedNode);
-		AddNodeToAssets(newNode);
-		SaveBehaviourTree();
+	void NewChildControlSequenceCallback () {
+		NewChildControl(BehaviourTreeControlNode.Type.SEQUENCE);
 	}
 
-	void DecoratorInverterCallback () {
+	void NewChildControlParallelCallback () {
+		NewChildControl(BehaviourTreeControlNode.Type.PARALLEL);
+	}
+
+	void NewChildDecorator (BehaviourTreeDecoratorNode.Type type) {
 		BehaviourTreeDecoratorNode newNode = (BehaviourTreeDecoratorNode)ScriptableObject.CreateInstance("BehaviourTreeDecoratorNode");
-		newNode.type = BehaviourTreeDecoratorNode.Type.INVERTER;
+		newNode.type = type;
 		newNode.ID = GetNextWindowID();
 		newNode.displayedName = newNode.type.ToString();
-		AddChildToParent(newNode, this.selectedNode);
+		this.selectedNode.AddChild(newNode);
+		// AddChildToParent(newNode, this.selectedNode);
 		AddNodeToAssets(newNode);
 		SaveBehaviourTree();
 	}
 
-	void DecoratorSucceederCallback () {
-		BehaviourTreeDecoratorNode newNode = (BehaviourTreeDecoratorNode)ScriptableObject.CreateInstance("BehaviourTreeDecoratorNode");
-		newNode.type = BehaviourTreeDecoratorNode.Type.SUCCEEDER;
+	void NewChildDecoratorInverterCallback () {
+		NewChildDecorator(BehaviourTreeDecoratorNode.Type.INVERTER);
+	}
+
+	void NewChildDecoratorSucceederCallback () {
+		NewChildDecorator(BehaviourTreeDecoratorNode.Type.SUCCEEDER);
+	}
+
+	void NewChildDecoratorLoserCallback () {
+		NewChildDecorator(BehaviourTreeDecoratorNode.Type.LOSER);
+	}
+
+	void NewChildDecoratorIgnoreSuccessCallback () {
+		NewChildDecorator(BehaviourTreeDecoratorNode.Type.IGNORE_SUCCESS);
+	}
+
+	void NewChildDecoratorIgnoreFailureCallback () {
+		NewChildDecorator(BehaviourTreeDecoratorNode.Type.IGNORE_FAILURE);
+	}
+
+	void NewParentControl (BehaviourTreeControlNode.Type type) {
+		BehaviourTreeControlNode newNode = (BehaviourTreeControlNode)ScriptableObject.CreateInstance("BehaviourTreeControlNode");
+		newNode.type = type;
 		newNode.ID = GetNextWindowID();
 		newNode.displayedName = newNode.type.ToString();
-		AddChildToParent(newNode, this.selectedNode);
+		BehaviourTreeNode parent = FindParentOfNodeByID(BehaviourTreeEditorWindow.behaviourTree, this.selectedNode.ID);
+		parent.ReplaceChild(this.selectedNode, newNode);
+		newNode.AddChild(this.selectedNode);
 		AddNodeToAssets(newNode);
 		SaveBehaviourTree();
+	}
+
+	void NewParentControlSelectorCallback () {
+		NewParentControl(BehaviourTreeControlNode.Type.SELECTOR);
+	}
+
+	void NewParentControlSequenceCallback () {
+		NewParentControl(BehaviourTreeControlNode.Type.SEQUENCE);
+	}
+
+	void NewParentControlParallelCallback () {
+		NewParentControl(BehaviourTreeControlNode.Type.PARALLEL);
+	}
+
+	void NewParentDecorator (BehaviourTreeDecoratorNode.Type type) {
+		BehaviourTreeDecoratorNode newNode = (BehaviourTreeDecoratorNode)ScriptableObject.CreateInstance("BehaviourTreeDecoratorNode");
+		newNode.type = type;
+		newNode.ID = GetNextWindowID();
+		newNode.displayedName = newNode.type.ToString();
+		BehaviourTreeNode parent = FindParentOfNodeByID(BehaviourTreeEditorWindow.behaviourTree, this.selectedNode.ID);
+		parent.ReplaceChild(this.selectedNode, newNode);
+		newNode.AddChild(this.selectedNode);
+		AddNodeToAssets(newNode);
+		SaveBehaviourTree();
+	}
+
+	void NewParentDecoratorInverterCallback () {
+		NewParentDecorator(BehaviourTreeDecoratorNode.Type.INVERTER);
+	}
+
+	void NewParentDecoratorSucceederCallback () {
+		NewParentDecorator(BehaviourTreeDecoratorNode.Type.SUCCEEDER);
+	}
+
+	void NewParentDecoratorLoserCallback () {
+		NewParentDecorator(BehaviourTreeDecoratorNode.Type.LOSER);
+	}
+
+	void NewParentDecoratorIgnoreSuccessCallback () {
+		NewParentDecorator(BehaviourTreeDecoratorNode.Type.IGNORE_SUCCESS);
+	}
+
+	void NewParentDecoratorIgnoreFailureCallback () {
+		NewParentDecorator(BehaviourTreeDecoratorNode.Type.IGNORE_FAILURE);
 	}
 
 	void ExecutionCallback () {
 		BehaviourTreeExecutionNode newNode = (BehaviourTreeExecutionNode)ScriptableObject.CreateInstance("BehaviourTreeExecutionNode");
 		newNode.ID = GetNextWindowID();
-		AddChildToParent(newNode, this.selectedNode);
+		this.selectedNode.AddChild(newNode);
 		newNode.displayedName = "Execution";
 		AddNodeToAssets(newNode);
 		SaveBehaviourTree();
@@ -308,25 +385,51 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		Debug.Log("SubTreeCallback");
 	}
 
-	void DeleteNodeAndChildrenCallback () {
+	void DeleteNodeCallback () {
+		if( ! EditorUtility.DisplayDialog("Delete node ?",
+			"Are you sure you want to delete the node " + this.selectedNode.displayedName + " ?",
+			"Yes, delete this node", "No")) {
+			
+			return;
+		}
+
 		BehaviourTreeNode parent = FindParentOfNodeByID(BehaviourTreeEditorWindow.behaviourTree, this.selectedNode.ID);
-		parent.RemoveChild(selectedNode);
-		DeleteRecursivelyNodeAndChildrenAssets(selectedNode);
+		parent.ReplaceChild(this.selectedNode, this.selectedNode.GetChildren()[0]);
+		DeleteNodeAsset(this.selectedNode);
 		AssetDatabase.Refresh();
 		SaveBehaviourTree();
 	}
 
-	void DeleteRecursivelyNodeAndChildrenAssets (BehaviourTreeNode node) {
+	void DeleteBranchCallback () {
+		if( ! EditorUtility.DisplayDialog("Delete branch ?",
+			"Are you sure you want to delete the node " + this.selectedNode.displayedName + " and his children ?",
+			"Yes, delete this branch", "No")) {
+			
+			return;
+		}
+		
+		BehaviourTreeNode parent = FindParentOfNodeByID(BehaviourTreeEditorWindow.behaviourTree, this.selectedNode.ID);
+		parent.RemoveChild(selectedNode);
+		DeleteRecursivelyBranchAssets(selectedNode);
+		AssetDatabase.Refresh();
+		SaveBehaviourTree();
+	}
 
+	void DeleteRecursivelyBranchAssets (BehaviourTreeNode node) {
+
+		DeleteNodeAsset(node);
+
+		foreach(BehaviourTreeNode child in node.GetChildren()) {
+			DeleteRecursivelyBranchAssets(child);
+		}
+	}
+
+	void DeleteNodeAsset (BehaviourTreeNode node) {
 		AssetDatabase.DeleteAsset(assetsFilesPath + "/Node" + node.ID + ".asset");
 
 		if(node is BehaviourTreeExecutionNode && File.Exists(assetsFilesPath + "/Node" + node.ID + "Task.asset")) {
 
 			AssetDatabase.DeleteAsset(assetsFilesPath + "/Node" + node.ID + "Task.asset");
-		}
-
-		foreach(BehaviourTreeNode child in node.GetChildren()) {
-			DeleteRecursivelyNodeAndChildrenAssets(child);
 		}
 	}
 
@@ -429,30 +532,6 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		return null;
 	}
 
-	void AddChildToParent (BehaviourTreeNode child, BehaviourTreeNode parent) {
-
-		if(parent is BehaviourTree) {
-
-			if(BehaviourTreeEditorWindow.behaviourTree.child == null) {
-				BehaviourTreeEditorWindow.behaviourTree.child = child;
-			}
-
-		} else if(parent is BehaviourTreeControlNode) {
-
-			BehaviourTreeControlNode controlNode = (BehaviourTreeControlNode)parent;
-
-			controlNode.children.Add(child);
-
-		} else if(parent is BehaviourTreeDecoratorNode) {
-
-			BehaviourTreeDecoratorNode decoratorNode = (BehaviourTreeDecoratorNode)parent;
-
-			if(decoratorNode.child == null) {
-				decoratorNode.child = child;
-			}
-		}
-	}
-
     void RootWindowFunction (int windowID) {
 
 		Event current = Event.current;
@@ -491,21 +570,23 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 			SaveNodeAnChildren(node);
 		}
 
-		bool initialMemorizeValue = node.startFromFirstNodeEachTick;
+		if(node.type != BehaviourTreeControlNode.Type.PARALLEL) {
+			bool initialMemorizeValue = node.startFromFirstNodeEachTick;
 
-		GUILayout.BeginHorizontal();
+			GUILayout.BeginHorizontal();
 
-			GUI.color = Color.black;
-			GUILayout.Label("Don't memorize running node");
+				GUI.color = Color.black;
+				GUILayout.Label("Don't memorize running node");
 
-			GUI.color = Color.white;
-			bool memorizeValue = EditorGUILayout.Toggle(initialMemorizeValue);
-			if( memorizeValue != initialMemorizeValue) {
-				node.startFromFirstNodeEachTick = memorizeValue;
-				SaveNodeAnChildren(node);
-			}
-			
-		GUILayout.EndHorizontal();
+				GUI.color = Color.white;
+				bool memorizeValue = EditorGUILayout.Toggle(initialMemorizeValue);
+				if( memorizeValue != initialMemorizeValue) {
+					node.startFromFirstNodeEachTick = memorizeValue;
+					SaveNodeAnChildren(node);
+				}
+				
+			GUILayout.EndHorizontal();
+		}
 
 		Event current = Event.current;
 
@@ -517,8 +598,16 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 
 			AddNewChildOption(menu, true);
 			menu.AddItem(new GUIContent("New Child/Sub-tree"), false, SubTreeCallback);
+			AddInsertNewParentOptions(menu);
 			AddMoveOption(menu);
-			menu.AddItem(new GUIContent("Delete Node and Children"), false, DeleteNodeAndChildrenCallback);
+			if(this.selectedNode.ChildrenCount() <= 1) {
+				menu.AddItem(new GUIContent("Delete Node"), false, DeleteNodeCallback);
+				menu.AddDisabledItem(new GUIContent("Delete Branch"));
+			} else {
+				menu.AddDisabledItem(new GUIContent("Delete Node"));
+				menu.AddItem(new GUIContent("Delete Branch"), false, DeleteBranchCallback);
+			}
+			
 			menu.ShowAsContext();
 			
 			current.Use();
@@ -585,8 +674,9 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 			
 			GenericMenu menu = new GenericMenu();
 
+			AddInsertNewParentOptions(menu);
 			AddMoveOption(menu);
-			menu.AddItem(new GUIContent("Delete Node"), false, DeleteNodeAndChildrenCallback);
+			menu.AddItem(new GUIContent("Delete Node"), false, DeleteNodeCallback);
 			menu.ShowAsContext();
 			
 			current.Use();
@@ -665,8 +755,10 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 			if(node.child == null) {
 				menu.AddItem(new GUIContent("New Child/Sub-tree"), false, SubTreeCallback);
 			}
+			AddInsertNewParentOptions(menu);
 			AddMoveOption(menu);
-			menu.AddItem(new GUIContent("Delete Node and Children"), false, DeleteNodeAndChildrenCallback);
+			menu.AddItem(new GUIContent("Delete Node"), false, DeleteNodeCallback);
+			menu.AddItem(new GUIContent("Delete Branch"), false, DeleteBranchCallback);
 			menu.ShowAsContext();
 			
 			current.Use();
@@ -682,16 +774,30 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 	void AddNewChildOption (GenericMenu menu, bool enabled) {
 
 		if(enabled) {
-			menu.AddItem(new GUIContent("New Child/Control/Selector"), false, ControlSelectorCallback);
-			menu.AddItem(new GUIContent("New Child/Control/Sequence"), false, ControlSequenceCallback);
-			menu.AddItem(new GUIContent("New Child/Control/Parallel"), false, ControlParallelCallback);
-			menu.AddItem(new GUIContent("New Child/Decorator/Inverter"), false, DecoratorInverterCallback);
-			menu.AddItem(new GUIContent("New Child/Decorator/Succeeder"), false, DecoratorSucceederCallback);
+			menu.AddItem(new GUIContent("New Child/Control/Selector"), false, NewChildControlSelectorCallback);
+			menu.AddItem(new GUIContent("New Child/Control/Sequence"), false, NewChildControlSequenceCallback);
+			menu.AddItem(new GUIContent("New Child/Control/Parallel"), false, NewChildControlParallelCallback);
+			menu.AddItem(new GUIContent("New Child/Decorator/Inverter"), false, NewChildDecoratorInverterCallback);
+			menu.AddItem(new GUIContent("New Child/Decorator/Succeeder"), false, NewChildDecoratorSucceederCallback);
+			menu.AddItem(new GUIContent("New Child/Decorator/Loser"), false, NewChildDecoratorLoserCallback);
+			menu.AddItem(new GUIContent("New Child/Decorator/Ignore Success"), false, NewChildDecoratorIgnoreSuccessCallback);
+			menu.AddItem(new GUIContent("New Child/Decorator/Ignore Failure"), false, NewChildDecoratorIgnoreFailureCallback);
 			menu.AddItem(new GUIContent("New Child/Execution"), false, ExecutionCallback);
 		} else {
 			menu.AddDisabledItem(new GUIContent("New Child"));
 		}
 		
+	}
+
+	void AddInsertNewParentOptions (GenericMenu menu) {
+		menu.AddItem(new GUIContent("Insert New Parent/Control/Selector"), false, NewParentControlSelectorCallback);
+		menu.AddItem(new GUIContent("Insert New Parent/Control/Sequence"), false, NewParentControlSequenceCallback);
+		menu.AddItem(new GUIContent("Insert New Parent/Control/Parallel"), false, NewParentControlParallelCallback);
+		menu.AddItem(new GUIContent("Insert New Parent/Decorator/Inverter"), false, NewParentDecoratorInverterCallback);
+		menu.AddItem(new GUIContent("Insert New Parent/Decorator/Succeeder"), false, NewParentDecoratorSucceederCallback);
+		menu.AddItem(new GUIContent("Insert New Parent/Decorator/Loser"), false, NewParentDecoratorLoserCallback);
+		menu.AddItem(new GUIContent("Insert New Parent/Decorator/Ignore Success"), false, NewParentDecoratorIgnoreSuccessCallback);
+		menu.AddItem(new GUIContent("Insert New Parent/Decorator/Ignore Failure"), false, NewParentDecoratorIgnoreFailureCallback);
 	}
 
 	void AddMoveOption (GenericMenu menu) {
@@ -700,6 +806,10 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		menu.AddItem(new GUIContent("Move/Right"), false, MoveRightCallback);
 		menu.AddItem(new GUIContent("Move/Last"), false, MoveLastCallback);
 	}
+
+	/*********************************************************************************/
+	/****************************** MOVE NODE CALLBACKS ******************************/
+	/*********************************************************************************/
 
 	void MoveFirstCallback () {
 		BehaviourTreeNode parent = FindParentOfNodeByID(BehaviourTreeEditorWindow.behaviourTree, this.selectedNode.ID);
@@ -797,11 +907,11 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 
 			object value = null;
 
-			if(initialValue is string) value = EditorGUILayout.TextField((string)initialValue);
-			else if(initialValue is float) value = EditorGUILayout.FloatField((float)initialValue);
-			else if(initialValue is int) value = EditorGUILayout.IntField((int)initialValue);
-			else if(initialValue is double) value = EditorGUILayout.DoubleField((double)initialValue);
-			else if(initialValue is bool) value = EditorGUILayout.Toggle((bool)initialValue);
+			if(variable.type == typeof(string)) value = EditorGUILayout.TextField((string)initialValue);
+			else if(variable.type == typeof(float)) value = EditorGUILayout.FloatField((float)initialValue);
+			else if(variable.type == typeof(int)) value = EditorGUILayout.IntField((int)initialValue);
+			else if(variable.type == typeof(double)) value = EditorGUILayout.DoubleField((double)initialValue);
+			else if(variable.type == typeof(bool)) value = EditorGUILayout.Toggle((bool)initialValue);
 			
 			if(value == null) {
 				GUILayout.EndHorizontal();

@@ -1,5 +1,7 @@
 This list is not ordered by priority, it is just idea of future development ...
 
+Add insert parent node option.
+
 Add debug/actif node option.
 
 Add build-in execution nodes to manage the tree execution (eg. SetContextVariable).

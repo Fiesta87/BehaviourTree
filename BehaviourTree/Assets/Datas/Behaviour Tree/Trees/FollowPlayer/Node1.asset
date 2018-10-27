@@ -13,10 +13,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rect:
     serializedVersion: 2
-    x: 371.5
-    y: 190
-    width: 270
-    height: 105
+    x: 401.5
+    y: 142
+    width: 198
+    height: 77
   ID: 1
   displayedName: SEQUENCE
   type: 1

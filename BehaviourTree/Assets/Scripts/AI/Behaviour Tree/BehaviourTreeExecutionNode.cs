@@ -55,6 +55,13 @@ public class BehaviourTreeExecutionNode : BehaviourTreeNode, ISerializationCallb
         return result;
     }
 
+	public override void Kill () {
+        if( ! this.firstTick) {
+            this.task.Kill();
+            this.firstTick = true;
+        }
+    }
+
     public override int ChildrenCount () {
         return 0;
     }
@@ -66,6 +73,13 @@ public class BehaviourTreeExecutionNode : BehaviourTreeNode, ISerializationCallb
     public override void RemoveChild (BehaviourTreeNode child) {
         
     }
+
+	public override void AddChild (BehaviourTreeNode child) {
+		
+	}
+	public override void ReplaceChild (BehaviourTreeNode oldChild, BehaviourTreeNode newChild) {
+		
+	}
 
     public void OnBeforeSerialize () {
 
