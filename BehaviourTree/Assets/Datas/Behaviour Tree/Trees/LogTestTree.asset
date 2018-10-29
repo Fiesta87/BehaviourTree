@@ -13,11 +13,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rect:
     serializedVersion: 2
-    x: 443.5
-    y: 10
-    width: 125.999985
-    height: 48.999996
+    x: 485.5
+    y: 91
+    width: 89.999985
+    height: 29.999994
   ID: 0
   displayedName: LogTestTree
   child: {fileID: 11400000, guid: 690f1b9f82d0c9044abc567ed62569a9, type: 2}
-  nextWindowID: 25
+  nextWindowID: 29

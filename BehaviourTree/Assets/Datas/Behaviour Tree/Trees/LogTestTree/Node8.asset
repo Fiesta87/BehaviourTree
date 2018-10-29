@@ -13,10 +13,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rect:
     serializedVersion: 2
-    x: 793.49994
-    y: 345.99997
-    width: 125.999985
-    height: 48.999996
+    x: 735.4999
+    y: 310.99994
+    width: 89.999985
+    height: 29.999994
   ID: 8
   displayedName: LogTask
   task: {fileID: 11400000, guid: 3286c3f46e3a31746884bb0316f7f378, type: 2}

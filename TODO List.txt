@@ -1,13 +1,13 @@
 This list is not ordered by priority, it is just idea of future development ...
 
-Add insert parent node option.
+Add new decorator node types.
+	- IsContextVariableDefined
 
 Add debug/actif node option.
 
 Add build-in execution nodes to manage the tree execution (eg. SetContextVariable).
 	- CopyContextVariable
 	- PopFromStack
-	- IsContextVariableDefined
 
 Add a sub-tree node.
 
@@ -18,5 +18,3 @@ Player and NPC behaviour :
 		- asking to others / trading
 	- crafting with tools in different locations
 	- communicate with others
-
-Update editor visual for execution node.

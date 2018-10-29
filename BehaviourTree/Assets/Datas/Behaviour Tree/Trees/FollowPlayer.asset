@@ -13,10 +13,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rect:
     serializedVersion: 2
-    x: 401.5
+    x: 416.5
     y: 10
-    width: 198
-    height: 77
+    width: 180
+    height: 60
   ID: 0
   displayedName: FollowPlayer
   child: {fileID: 11400000, guid: c65f3ec120619884cb9f6cda9d0b2679, type: 2}

@@ -13,11 +13,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rect:
     serializedVersion: 2
-    x: 513.5
-    y: 345.99997
-    width: 125.999985
-    height: 48.999996
+    x: 535.49994
+    y: 310.99994
+    width: 89.999985
+    height: 29.999994
   ID: 18
-  displayedName: IGNORE_SUCCESS
+  displayedName: IGNORE SUCCESS
   type: 3
   child: {fileID: 11400000, guid: 6d3041d6e765d434cb128426e727fa9e, type: 2}

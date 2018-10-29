@@ -13,10 +13,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rect:
     serializedVersion: 2
-    x: 583.5
-    y: 177.99998
-    width: 125.999985
-    height: 48.999996
+    x: 585.49994
+    y: 200.99997
+    width: 89.999985
+    height: 29.999994
   ID: 10
   displayedName: SUCCEEDER
   type: 1

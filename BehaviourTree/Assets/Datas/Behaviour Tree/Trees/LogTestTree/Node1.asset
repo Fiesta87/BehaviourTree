@@ -13,13 +13,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rect:
     serializedVersion: 2
-    x: 443.5
-    y: 93.99999
-    width: 125.999985
-    height: 48.999996
+    x: 485.5
+    y: 145.99998
+    width: 89.999985
+    height: 29.999994
   ID: 1
-  displayedName: SEQUENCE
-  type: 1
+  displayedName: SELECTOR
+  type: 0
   children:
   - {fileID: 11400000, guid: 0a2bd88660c431d459cf352a568b08e9, type: 2}
   - {fileID: 11400000, guid: d02a539b5fccf43498875ce2fb5d02b7, type: 2}

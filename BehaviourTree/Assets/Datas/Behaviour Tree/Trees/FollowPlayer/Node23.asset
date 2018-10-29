@@ -13,10 +13,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rect:
     serializedVersion: 2
-    x: 511.5
-    y: 274
-    width: 198
-    height: 77
+    x: 516.5
+    y: 230
+    width: 180
+    height: 60
   ID: 23
   displayedName: WalkToTask
   task: {fileID: 11400000, guid: a7353d774b994954581aba1cf51701e6, type: 2}
