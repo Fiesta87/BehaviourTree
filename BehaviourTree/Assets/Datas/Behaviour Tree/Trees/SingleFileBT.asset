@@ -1,0 +1,120 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 470cc6adc2fb8cc4194c139d0897c76b, type: 3}
+  m_Name: SingleFileBT
+  m_EditorClassIdentifier: 
+  rect:
+    serializedVersion: 2
+    x: 413.5
+    y: 13
+    width: 180
+    height: 60
+  ID: 0
+  displayedName: SingleFileBT
+  child: {fileID: 114443440419767032}
+  nextWindowID: 5
+--- !u!114 &114443440419767032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e47869269a7fb3940bbf0ed711658f0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rect:
+    serializedVersion: 2
+    x: 413.5
+    y: 123
+    width: 180
+    height: 60
+  ID: 2
+  displayedName: SEQUENCE
+  type: 1
+  children:
+  - {fileID: 114724356915384642}
+  - {fileID: 114884721051826060}
+  startFromFirstNodeEachTick: 1
+--- !u!114 &114724356915384642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a9b2b9cce5fdec49a09a9b2ad1afd64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rect:
+    serializedVersion: 2
+    x: 313.5
+    y: 233
+    width: 180
+    height: 60
+  ID: 3
+  displayedName: FindPlayerTask
+  task: {fileID: 114920843828003286}
+  contextLinkKeys:
+  - out_playerPosition
+  contextLinkValues:
+  - playerPosition
+--- !u!114 &114884721051826060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a9b2b9cce5fdec49a09a9b2ad1afd64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rect:
+    serializedVersion: 2
+    x: 513.5
+    y: 233
+    width: 180
+    height: 60
+  ID: 4
+  displayedName: WalkToTask
+  task: {fileID: 114915118276152090}
+  contextLinkKeys:
+  - in_position
+  contextLinkValues:
+  - playerPosition
+--- !u!114 &114915118276152090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a474375e7793a04f9c8bbc2aa119029, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  param_distance: 1.5
+  in_position: {x: 0, y: 0, z: 0}
+--- !u!114 &114920843828003286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8bd34a78d4792e41a68c57f9a5d90ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  out_playerPosition: {x: 0, y: 0, z: 0}

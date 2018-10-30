@@ -1,12 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 /// <summary>
 /// This class is an executable task in a behaviour tree.
 /// </summary>
 public abstract class BehaviourTreeTask : ScriptableObject {
 
+    [NonSerialized]
     protected BehaviourTreeAgent agent;
 
     public void Init (BehaviourTreeAgent agent) {

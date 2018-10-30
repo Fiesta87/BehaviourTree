@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class BehaviourTreeControlNode : BehaviourTreeNode {
 
@@ -16,6 +17,7 @@ public class BehaviourTreeControlNode : BehaviourTreeNode {
     [SerializeField]
     public bool startFromFirstNodeEachTick = false;
 
+    [NonSerialized]
     private BehaviourTreeNode currentTickedNode;
 
     public BehaviourTreeControlNode () {

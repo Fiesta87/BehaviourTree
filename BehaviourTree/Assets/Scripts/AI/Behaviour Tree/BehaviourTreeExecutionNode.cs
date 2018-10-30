@@ -1,14 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-// using UnityEditor;
+using System;
 
 public class BehaviourTreeExecutionNode : BehaviourTreeNode, ISerializationCallbackReceiver {
 
     [SerializeField]
-    // [HideInInspector]
+    [HideInInspector]
     public BehaviourTreeTask task;
 
+    [NonSerialized]
     public Dictionary<string, string> contextLink = new Dictionary<string, string>();
 
     [SerializeField]
@@ -17,7 +18,10 @@ public class BehaviourTreeExecutionNode : BehaviourTreeNode, ISerializationCallb
     [SerializeField]
     public List<string> contextLinkValues = new List<string>();
 
+    [NonSerialized]
     private bool firstTick;
+
+    [NonSerialized]
     private BehaviourTreeAgent agent;
 
     public override void Init (BehaviourTreeAgent agent) {

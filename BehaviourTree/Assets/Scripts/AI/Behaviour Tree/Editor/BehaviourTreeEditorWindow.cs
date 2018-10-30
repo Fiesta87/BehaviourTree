@@ -15,7 +15,7 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 	[SerializeField]
 	public BehaviourTree behaviourTreeSerializedSaved;
 
-	private string assetsFilesPath;
+	private string behaviourTreeAssetFilesPath;
 	public BehaviourTreeNode selectedNode;
 	private Vector2 nodeSize = new Vector2(180, 60);
 
@@ -67,10 +67,10 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 
 	public void OnEnable () {
 		
-		if(behaviourTreeSerializedSaved == null) {
-			behaviourTreeSerializedSaved = BehaviourTreeEditorWindow.behaviourTree;
+		if(behaviourTreeSerializedSaved != null) {
+			BehaviourTreeEditorWindow.behaviourTree = behaviourTreeSerializedSaved;
 		}
-		InitEditor(behaviourTreeSerializedSaved);
+		InitEditor(BehaviourTreeEditorWindow.behaviourTree);
 	}
 
 	public void OnDisable () {
@@ -92,23 +92,11 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 				BehaviourTreeEditorWindow.behaviourTree.displayedName = BehaviourTreeEditorWindow.behaviourTree.name;
 			}
 
-			// string filePath = AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(BehaviourTreeEditorWindow.behaviourTree)); // Assets/Scrpits/AI/BT/BT.cs
-
-			assetsFilesPath = AssetDatabase.GetAssetPath(BehaviourTreeEditorWindow.behaviourTree); // Assets/Datas/BT/First.asset
-			
-			assetsFilesPath = assetsFilesPath.Split('.')[0];
-
-			try {
-				if (!Directory.Exists(assetsFilesPath)) {
-					Directory.CreateDirectory(assetsFilesPath);
-					AssetDatabase.Refresh();
-				}
-			}
-			catch (IOException ex) {
-				Debug.Log(ex.Message);
-			}
+			behaviourTreeAssetFilesPath = AssetDatabase.GetAssetPath(BehaviourTreeEditorWindow.behaviourTree); // Assets/Datas/BT/First.asset
 
 			SaveBehaviourTree();
+
+			Selection.activeObject = BehaviourTreeEditorWindow.behaviourTree;
 		}
 	}
 
@@ -262,11 +250,14 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 			GUI.color = colorExecutionNode;
 		} else if(node is BehaviourTreeDecoratorNode) {
 			GUI.color = colorDecoratorNode;
+		} else if(node is BehaviourTreeSubTreeNode) {
+			GUI.color = colorBehaviourTreeNode;
 		}
 	}
 
 	void AddNodeToAssets(BehaviourTreeNode node) {
-		AssetDatabase.CreateAsset(node, assetsFilesPath + "/Node" + node.ID + ".asset");
+		AssetDatabase.AddObjectToAsset(node, behaviourTreeAssetFilesPath);
+		AssetDatabase.ImportAsset(behaviourTreeAssetFilesPath);
 		AssetDatabase.Refresh();
 	}
 
@@ -393,7 +384,13 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 	}
 
 	void SubTreeCallback () {
-		Debug.Log("SubTreeCallback");
+		BehaviourTreeSubTreeNode newNode = (BehaviourTreeSubTreeNode)ScriptableObject.CreateInstance("BehaviourTreeSubTreeNode");
+		newNode.ID = GetNextWindowID();
+		this.selectedNode.AddChild(newNode);
+		newNode.displayedName = "SUB TREE";
+		AddNodeToAssets(newNode);
+		SaveBehaviourTree();
+		this.selectedNode = newNode;
 	}
 
 	void DeleteNodeCallback () {
@@ -442,12 +439,16 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 	}
 
 	void DeleteNodeAsset (BehaviourTreeNode node) {
-		AssetDatabase.DeleteAsset(assetsFilesPath + "/Node" + node.ID + ".asset");
 
-		if(node is BehaviourTreeExecutionNode && File.Exists(assetsFilesPath + "/Node" + node.ID + "Task.asset")) {
-
-			AssetDatabase.DeleteAsset(assetsFilesPath + "/Node" + node.ID + "Task.asset");
+		if(node is BehaviourTreeExecutionNode) {
+			BehaviourTreeExecutionNode execNode = (BehaviourTreeExecutionNode)node;
+			if(execNode.task != null) {
+				DestroyImmediate(execNode.task, true);
+			}
 		}
+
+		DestroyImmediate(node, true);
+		AssetDatabase.ImportAsset(behaviourTreeAssetFilesPath);
 	}
 
 	void CreateNodeRect(BehaviourTreeNode node, BehaviourTreeNode nodeParent) {
@@ -464,6 +465,8 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 			func = ExecutionWindowFunction;
 		} else if (node is BehaviourTreeDecoratorNode) {
 			func = DecoratorWindowFunction;
+		} else if (node is BehaviourTreeSubTreeNode) {
+			func = SubTreeWindowFunction;
 		}
 
 		int nbChildren = nodeParent.ChildrenCount();
@@ -586,7 +589,6 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 			GenericMenu menu = new GenericMenu();
 
 			AddNewChildOption(menu, true);
-			menu.AddItem(new GUIContent("New Child/Sub-tree"), false, SubTreeCallback);
 			AddInsertNewParentOptions(menu);
 			AddMoveOption(menu);
 			if(this.selectedNode.ChildrenCount() <= 1) {
@@ -658,6 +660,8 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 				current.Use();
 				return;
 			}
+
+			bool shouldRemoveOldTaskFirst = node.task != null;
 			
 			node.task = so as BehaviourTreeTask;
 
@@ -673,11 +677,21 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 
 			node.displayedName = taskType.ToString();
 
-			AddTaskToAssets(node);
+			AddTaskToAssets(node, shouldRemoveOldTaskFirst);
 
 			BehaviourTreeEditorWindow.SaveBehaviourTree();
 
 			this.selectedNode = node;
+
+			current.Use();
+
+		} else if(current.type == EventType.MouseDown && current.button == 0 && current.clickCount == 2) {
+
+			this.selectedNode = node;
+			
+			MonoScript monoscript = MonoScript.FromScriptableObject(node.task);
+			string scriptPath = AssetDatabase.GetAssetPath(monoscript);
+			UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(scriptPath, 0);
 
 			current.Use();
 
@@ -702,9 +716,6 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 			GenericMenu menu = new GenericMenu();
 
 			AddNewChildOption(menu, node.child == null);
-			if(node.child == null) {
-				menu.AddItem(new GUIContent("New Child/Sub-tree"), false, SubTreeCallback);
-			}
 			AddInsertNewParentOptions(menu);
 			AddMoveOption(menu);
 			menu.AddItem(new GUIContent("Delete Node"), false, DeleteNodeCallback);
@@ -721,6 +732,83 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		}
     }
 
+	void SubTreeWindowFunction (int windowID) {
+		BehaviourTreeSubTreeNode node = (BehaviourTreeSubTreeNode)FindNodeByID(BehaviourTreeEditorWindow.behaviourTree, windowID);
+
+		Event current = Event.current;
+
+		if(current.mousePosition.x >= 0.0f && current.mousePosition.x <= nodeSize.x * zoomScale &&
+		current.mousePosition.y >= 0.0f && current.mousePosition.y <= nodeSize.y * zoomScale &&
+		DragAndDrop.objectReferences.Length == 1) {
+
+			Object subTreeScriptAsset = DragAndDrop.objectReferences[0];
+
+			if( ! (subTreeScriptAsset is MonoScript)) {
+				DragAndDrop.visualMode = DragAndDropVisualMode.Rejected;
+			} else {
+				DragAndDrop.visualMode = DragAndDropVisualMode.Link;
+			}
+		}
+
+		if(current.type == EventType.MouseDown && current.button == 1) {
+
+			this.selectedNode = node;
+			
+			GenericMenu menu = new GenericMenu();
+
+			AddInsertNewParentOptions(menu);
+			AddMoveOption(menu);
+			menu.AddItem(new GUIContent("Delete Node"), false, DeleteNodeCallback);
+			menu.ShowAsContext();
+			
+			current.Use();
+
+		} else if(current.type.Equals(EventType.DragExited)) {
+
+			Object subTreeScriptAsset = DragAndDrop.objectReferences[0];
+
+			if( ! (subTreeScriptAsset is MonoScript)) {
+				Debug.Log("not a MonoScript");
+				current.Use();
+				return;
+			}
+
+			System.Type subTreeType = (subTreeScriptAsset as MonoScript).GetClass();
+
+			ScriptableObject so = ScriptableObject.CreateInstance(subTreeType);
+
+			if( ! (so is BehaviourTree)) {
+				Debug.Log("not a BehaviourTree");
+				current.Use();
+				return;
+			}
+			
+			node.subTree = so as BehaviourTree;
+
+			node.displayedName = subTreeType.ToString();
+
+			BehaviourTreeEditorWindow.SaveBehaviourTree();
+
+			this.selectedNode = node;
+
+			current.Use();
+
+		} else if(current.type == EventType.MouseDown && current.button == 0 && current.clickCount == 2) {
+
+			Selection.activeObject = node.subTree;
+
+			OnOpenAsset(0, 0);
+
+			current.Use();
+
+		} else if(current.type == EventType.MouseDown && current.button == 0) {
+
+			this.selectedNode = node;
+
+			current.Use();
+		}
+	}
+
 	void AddNewChildOption (GenericMenu menu, bool enabled) {
 
 		if(enabled) {
@@ -733,6 +821,7 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 			menu.AddItem(new GUIContent("New Child/Decorator/Ignore Success"), false, NewChildDecoratorIgnoreSuccessCallback);
 			menu.AddItem(new GUIContent("New Child/Decorator/Ignore Failure"), false, NewChildDecoratorIgnoreFailureCallback);
 			menu.AddItem(new GUIContent("New Child/Execution"), false, ExecutionCallback);
+			menu.AddItem(new GUIContent("New Child/Sub-tree"), false, SubTreeCallback);
 		} else {
 			menu.AddDisabledItem(new GUIContent("New Child"));
 		}
@@ -817,23 +906,15 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		SaveBehaviourTree();
 	}
 
-	void AddTaskToAssets (BehaviourTreeExecutionNode node) {
+	void AddTaskToAssets (BehaviourTreeExecutionNode node, bool shouldRemoveOldTaskFirst) {
 
-		string path = assetsFilesPath + "/Node" + node.ID + "Task.asset";
-
-		if(File.Exists(path)) {
-
-			AssetDatabase.DeleteAsset(path);
+		if(shouldRemoveOldTaskFirst) {
+			DestroyImmediate(node.task, true);
 		}
 
-		AssetDatabase.CreateAsset(node.task, path);
+		AssetDatabase.AddObjectToAsset(node.task, behaviourTreeAssetFilesPath);
+		AssetDatabase.ImportAsset(behaviourTreeAssetFilesPath);
 		AssetDatabase.Refresh();
-	}
-
-	void SelectNodeInInspector (BehaviourTreeNode node) {
-		Object[] sel = new Object[1];
-		sel[0] = node;
-		Selection.objects = sel;
 	}
 
 	/*********************************************************************************/

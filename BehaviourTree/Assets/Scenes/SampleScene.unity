@@ -222,8 +222,12 @@ Prefab:
         type: 2}
       propertyPath: behaviourTree
       value: 
-      objectReference: {fileID: 11400000, guid: 1b3c18f08c9419046b89b6330835f953,
+      objectReference: {fileID: 11400000, guid: 1eb42db888d0c1e41a500c4d10a26ab2,
         type: 2}
+    - target: {fileID: 1017995050222926, guid: c83314ffe79cc2f479cd45c537b31337, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c83314ffe79cc2f479cd45c537b31337, type: 2}
   m_IsPrefabAsset: 0
@@ -319,6 +323,58 @@ MonoBehaviour:
   minDezoom: 0.4
   maxDezoom: 2
   smoothTime: 0.3
+--- !u!1001 &819796598
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4599468247825614, guid: c83314ffe79cc2f479cd45c537b31337, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -11.61
+      objectReference: {fileID: 0}
+    - target: {fileID: 4599468247825614, guid: c83314ffe79cc2f479cd45c537b31337, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4599468247825614, guid: c83314ffe79cc2f479cd45c537b31337, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 10.87
+      objectReference: {fileID: 0}
+    - target: {fileID: 4599468247825614, guid: c83314ffe79cc2f479cd45c537b31337, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4599468247825614, guid: c83314ffe79cc2f479cd45c537b31337, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4599468247825614, guid: c83314ffe79cc2f479cd45c537b31337, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4599468247825614, guid: c83314ffe79cc2f479cd45c537b31337, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4599468247825614, guid: c83314ffe79cc2f479cd45c537b31337, type: 2}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114902534313205682, guid: c83314ffe79cc2f479cd45c537b31337,
+        type: 2}
+      propertyPath: behaviourTree
+      value: 
+      objectReference: {fileID: 11400000, guid: 1eb42db888d0c1e41a500c4d10a26ab2,
+        type: 2}
+    - target: {fileID: 1017995050222926, guid: c83314ffe79cc2f479cd45c537b31337, type: 2}
+      propertyPath: m_Name
+      value: NPC Van Helsing (1)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: c83314ffe79cc2f479cd45c537b31337, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1 &864709971
 GameObject:
   m_ObjectHideFlags: 0

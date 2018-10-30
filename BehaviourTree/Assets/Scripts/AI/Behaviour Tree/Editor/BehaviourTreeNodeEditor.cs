@@ -5,6 +5,10 @@ using System.Collections.Generic;
 [CustomEditor(typeof(BehaviourTree))]
 public class BehaviourTreeNodeEditor : Editor {
 
+	public void OnEnable () {
+		Repaint();
+	}
+
 	public override void OnInspectorGUI() {
 		
 		Repaint();
@@ -130,6 +134,24 @@ public class BehaviourTreeNodeEditor : Editor {
 			if( typeValue != initialTypeValue) {
 				node.type = typeValue;
 				node.displayedName = typeValue.ToString().Replace('_', ' ');
+				BehaviourTreeEditorWindow.SaveNodeAnChildren(node);
+				BehaviourTreeEditorWindow.Instance.Repaint();
+			}
+		}
+
+		else if (selectedNode is BehaviourTreeSubTreeNode) {
+
+			BehaviourTreeSubTreeNode node = (BehaviourTreeSubTreeNode)selectedNode;
+
+			GUI.color = Color.white;
+
+			BehaviourTree initialValue = node.subTree;
+
+			BehaviourTree newValue = (BehaviourTree)EditorGUILayout.ObjectField(node.subTree, typeof(BehaviourTree), false);
+
+			if( newValue != initialValue) {
+				node.subTree = newValue;
+				node.displayedName = newValue.ToString().Replace('_', ' ').Split('(')[0];
 				BehaviourTreeEditorWindow.SaveNodeAnChildren(node);
 				BehaviourTreeEditorWindow.Instance.Repaint();
 			}

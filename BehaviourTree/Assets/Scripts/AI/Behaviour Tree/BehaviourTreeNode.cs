@@ -5,10 +5,15 @@ using UnityEngine;
 public abstract class BehaviourTreeNode : ScriptableObject {
 
 	[HideInInspector]
+	[SerializeField]
 	public Rect rect;
+	
 	[HideInInspector]
 	[SerializeField]
 	public int ID;
+
+	
+	[HideInInspector]
 	[SerializeField]
 	public string displayedName;
 

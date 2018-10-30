@@ -9,7 +9,9 @@ Add build-in execution nodes to manage the tree execution (eg. SetContextVariabl
 	- CopyContextVariable
 	- PopFromStack
 
-Add a sub-tree node.
+Complete sub-tree nodes with parameters.
+
+Finish Kill process.
 
 Develop the test game to create a test environment for NPCs controlled by a behaviour tree.
 Player and NPC behaviour :
