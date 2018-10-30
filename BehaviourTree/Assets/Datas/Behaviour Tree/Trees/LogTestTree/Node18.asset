@@ -13,10 +13,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rect:
     serializedVersion: 2
-    x: 535.49994
-    y: 310.99994
-    width: 89.999985
-    height: 29.999994
+    x: 471.5
+    y: 486
+    width: 180
+    height: 60
   ID: 18
   displayedName: IGNORE SUCCESS
   type: 3

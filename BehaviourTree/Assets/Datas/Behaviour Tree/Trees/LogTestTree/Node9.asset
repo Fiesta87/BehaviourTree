@@ -13,10 +13,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rect:
     serializedVersion: 2
-    x: 785.4999
-    y: 200.99997
-    width: 89.999985
-    height: 29.999994
+    x: 971.5
+    y: 266
+    width: 180
+    height: 60
   ID: 9
   displayedName: SELECTOR
   type: 0
