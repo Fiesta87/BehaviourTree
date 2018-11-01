@@ -37,6 +37,9 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 	private float minZoomForDisplayTitle = 0.4f;
 
 	[SerializeField]
+	public string folderToOpenPath = null;
+
+	[SerializeField]
 	public GUIStyle style;
 
     [OnOpenAsset(1)]
@@ -61,16 +64,12 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 	public static void ShowWindow () {
 		
 		Instance = GetWindow<BehaviourTreeEditorWindow>(false, "BehaviourTree", true);
-		Instance.InitEditor(BehaviourTreeEditorWindow.behaviourTree);
-		Instance.selectedNode = BehaviourTreeEditorWindow.behaviourTree;
+		Instance.InitEditor(null);
 	}
 
 	public void OnEnable () {
-		
-		if(behaviourTreeSerializedSaved != null) {
-			BehaviourTreeEditorWindow.behaviourTree = behaviourTreeSerializedSaved;
-		}
-		InitEditor(BehaviourTreeEditorWindow.behaviourTree);
+		Instance = EditorWindow.GetWindow<BehaviourTreeEditorWindow>("BehaviourTree");
+		InitEditor(behaviourTreeSerializedSaved);
 	}
 
 	public void OnDisable () {
@@ -100,10 +99,21 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		}
 	}
 
+	void OnSelectionChange () {
+        if(Selection.activeObject != BehaviourTreeEditorWindow.behaviourTree && Selection.activeObject is BehaviourTree) {
+			OnOpenAsset(0, 0);
+		}
+    }
+
 	void OnGUI () {
 
 		if(BehaviourTreeEditorWindow.behaviourTree == null) {
 			return;
+		}
+
+		if(folderToOpenPath != null) {
+			ProjectViewHelper.ShowFolderContents(folderToOpenPath);
+			folderToOpenPath = null;
 		}
 
 		style = new GUIStyle(GUI.skin.box);
@@ -552,6 +562,23 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		return null;
 	}
 
+	void SelectNodeButDontChangeProjectView () {
+		string path = AssetDatabase.GetAssetPath(Selection.activeObject);
+
+		if(!Directory.Exists(path)) {
+            if (File.Exists(path)) {
+                path = Path.GetDirectoryName(path);
+            }
+            if (string.IsNullOrEmpty(path)){
+                path = Path.GetDirectoryName(AssetDatabase.GetAssetPath(BehaviourTreeEditorWindow.behaviourTree));
+            }
+        }
+
+		folderToOpenPath = path;
+
+		Selection.activeObject = BehaviourTreeEditorWindow.behaviourTree;
+	}
+
     void RootWindowFunction (int windowID) {
 
 		Event current = Event.current;
@@ -570,7 +597,9 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 
 			this.selectedNode = FindNodeByID(BehaviourTreeEditorWindow.behaviourTree, windowID);
 
-			Selection.activeObject = BehaviourTreeEditorWindow.behaviourTree;
+			if(Selection.activeObject != BehaviourTreeEditorWindow.behaviourTree) {
+				SelectNodeButDontChangeProjectView();
+			}
 
 			current.Use();
 		}
@@ -585,6 +614,10 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		if(current.type == EventType.MouseDown && current.button == 1) {
 
 			this.selectedNode = node;
+
+			if(Selection.activeObject != BehaviourTreeEditorWindow.behaviourTree) {
+				SelectNodeButDontChangeProjectView();
+			}
 			
 			GenericMenu menu = new GenericMenu();
 
@@ -606,6 +639,10 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		} else if(current.type == EventType.MouseDown && current.button == 0) {
 
 			this.selectedNode = node;
+
+			if(Selection.activeObject != BehaviourTreeEditorWindow.behaviourTree) {
+				SelectNodeButDontChangeProjectView();
+			}
 
 			current.Use();
 		}
@@ -633,6 +670,10 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		if(current.type == EventType.MouseDown && current.button == 1) {
 
 			this.selectedNode = node;
+
+			if(Selection.activeObject != BehaviourTreeEditorWindow.behaviourTree) {
+				SelectNodeButDontChangeProjectView();
+			}
 			
 			GenericMenu menu = new GenericMenu();
 
@@ -661,7 +702,7 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 				return;
 			}
 
-			bool shouldRemoveOldTaskFirst = node.task != null;
+			BehaviourTreeTask oldTaskToRemove = node.task;
 			
 			node.task = so as BehaviourTreeTask;
 
@@ -677,17 +718,25 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 
 			node.displayedName = taskType.ToString();
 
-			AddTaskToAssets(node, shouldRemoveOldTaskFirst);
+			AddTaskToAssets(node, oldTaskToRemove);
 
 			BehaviourTreeEditorWindow.SaveBehaviourTree();
 
 			this.selectedNode = node;
+
+			Selection.activeObject = taskScriptAsset;
+
+			SelectNodeButDontChangeProjectView();
 
 			current.Use();
 
 		} else if(current.type == EventType.MouseDown && current.button == 0 && current.clickCount == 2) {
 
 			this.selectedNode = node;
+
+			if(Selection.activeObject != BehaviourTreeEditorWindow.behaviourTree) {
+				SelectNodeButDontChangeProjectView();
+			}
 			
 			MonoScript monoscript = MonoScript.FromScriptableObject(node.task);
 			string scriptPath = AssetDatabase.GetAssetPath(monoscript);
@@ -698,6 +747,10 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		} else if(current.type == EventType.MouseDown && current.button == 0) {
 
 			this.selectedNode = node;
+
+			if(Selection.activeObject != BehaviourTreeEditorWindow.behaviourTree) {
+				SelectNodeButDontChangeProjectView();
+			}
 
 			current.Use();
 		}
@@ -712,6 +765,10 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		if(current.type == EventType.MouseDown && current.button == 1) {
 
 			this.selectedNode = node;
+
+			if(Selection.activeObject != BehaviourTreeEditorWindow.behaviourTree) {
+				SelectNodeButDontChangeProjectView();
+			}
 			
 			GenericMenu menu = new GenericMenu();
 
@@ -727,6 +784,10 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		} else if(current.type == EventType.MouseDown && current.button == 0) {
 
 			this.selectedNode = node;
+
+			if(Selection.activeObject != BehaviourTreeEditorWindow.behaviourTree) {
+				SelectNodeButDontChangeProjectView();
+			}
 
 			current.Use();
 		}
@@ -753,6 +814,10 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		if(current.type == EventType.MouseDown && current.button == 1) {
 
 			this.selectedNode = node;
+
+			if(Selection.activeObject != BehaviourTreeEditorWindow.behaviourTree) {
+				SelectNodeButDontChangeProjectView();
+			}
 			
 			GenericMenu menu = new GenericMenu();
 
@@ -791,6 +856,10 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 
 			this.selectedNode = node;
 
+			if(Selection.activeObject != BehaviourTreeEditorWindow.behaviourTree) {
+				SelectNodeButDontChangeProjectView();
+			}
+
 			current.Use();
 
 		} else if(current.type == EventType.MouseDown && current.button == 0 && current.clickCount == 2) {
@@ -804,6 +873,10 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		} else if(current.type == EventType.MouseDown && current.button == 0) {
 
 			this.selectedNode = node;
+
+			if(Selection.activeObject != BehaviourTreeEditorWindow.behaviourTree) {
+				SelectNodeButDontChangeProjectView();
+			}
 
 			current.Use();
 		}
@@ -906,17 +979,6 @@ public class BehaviourTreeEditorWindow : EditorWindow {
 		SaveBehaviourTree();
 	}
 
-	void AddTaskToAssets (BehaviourTreeExecutionNode node, bool shouldRemoveOldTaskFirst) {
-
-		if(shouldRemoveOldTaskFirst) {
-			DestroyImmediate(node.task, true);
-		}
-
-		AssetDatabase.AddObjectToAsset(node.task, behaviourTreeAssetFilesPath);
-		AssetDatabase.ImportAsset(behaviourTreeAssetFilesPath);
-		AssetDatabase.Refresh();
-	}
-
 	/*********************************************************************************/
 	/************************* CREATION OF A TASK ASSET FILE *************************/
 	/*********************************************************************************/
@@ -962,4 +1024,15 @@ public class BehaviourTreeEditorWindow : EditorWindow {
             Selection.objects = AssetDatabase.LoadAllAssetsAtPath(pathName);
         }
     }
+
+	void AddTaskToAssets (BehaviourTreeExecutionNode node, BehaviourTreeTask oldTaskToRemove) {
+
+		if(oldTaskToRemove != null) {
+			DestroyImmediate(oldTaskToRemove, true);
+		}
+
+		AssetDatabase.AddObjectToAsset(node.task, behaviourTreeAssetFilesPath);
+		AssetDatabase.ImportAsset(behaviourTreeAssetFilesPath);
+		AssetDatabase.Refresh();
+	}
 }

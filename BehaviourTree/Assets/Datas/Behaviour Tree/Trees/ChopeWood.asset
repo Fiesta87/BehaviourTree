@@ -9,7 +9,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 470cc6adc2fb8cc4194c139d0897c76b, type: 3}
-  m_Name: SingleFileBT
+  m_Name: ChopeWood
   m_EditorClassIdentifier: 
   rect:
     serializedVersion: 2
@@ -18,10 +18,10 @@ MonoBehaviour:
     width: 180
     height: 60
   ID: 0
-  displayedName: SingleFileBT
-  child: {fileID: 114443440419767032}
-  nextWindowID: 5
---- !u!114 &114443440419767032
+  displayedName: ChopeWood
+  child: {fileID: 114434000650836656}
+  nextWindowID: 6
+--- !u!114 &114434000650836656
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -38,14 +38,28 @@ MonoBehaviour:
     y: 120
     width: 180
     height: 60
-  ID: 2
+  ID: 1
   displayedName: SEQUENCE
   type: 1
   children:
-  - {fileID: 114724356915384642}
-  - {fileID: 114884721051826060}
-  startFromFirstNodeEachTick: 1
---- !u!114 &114724356915384642
+  - {fileID: 114967996225584966}
+  - {fileID: 114541906513661888}
+  - {fileID: 114766709207465052}
+  startFromFirstNodeEachTick: 0
+--- !u!114 &114497381414574906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e407518e30daade4f9f024d83c78fd70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  out_closestTree: {fileID: 0}
+  out_position: {x: 0, y: 0, z: 0}
+--- !u!114 &114541906513661888
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -58,18 +72,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rect:
     serializedVersion: 2
-    x: 316.5
+    x: 416.5
     y: 230
     width: 180
     height: 60
   ID: 3
-  displayedName: FindPlayerTask
-  task: {fileID: 114920843828003286}
+  displayedName: WalkToTask
+  task: {fileID: 114984164298397056}
   contextLinkKeys:
-  - out_playerPosition
+  - in_position
   contextLinkValues:
-  - playerPosition
---- !u!114 &114884721051826060
+  - position
+--- !u!114 &114597808846320826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5a76d92e0ea16a4abb879399dd514fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114766709207465052
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -82,18 +107,44 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rect:
     serializedVersion: 2
-    x: 516.5
+    x: 616.5
     y: 230
     width: 180
     height: 60
-  ID: 4
-  displayedName: WalkToTask
-  task: {fileID: 114915118276152090}
+  ID: 5
+  displayedName: InteractTask
+  task: {fileID: 114597808846320826}
   contextLinkKeys:
-  - in_position
+  - in_interactiveObject
   contextLinkValues:
-  - playerPosition
---- !u!114 &114915118276152090
+  - closestTree
+--- !u!114 &114967996225584966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a9b2b9cce5fdec49a09a9b2ad1afd64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rect:
+    serializedVersion: 2
+    x: 216.5
+    y: 230
+    width: 180
+    height: 60
+  ID: 2
+  displayedName: FindTreeTask
+  task: {fileID: 114497381414574906}
+  contextLinkKeys:
+  - out_closestTree
+  - out_position
+  contextLinkValues:
+  - closestTree
+  - position
+--- !u!114 &114984164298397056
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -106,15 +157,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   param_distance: 1.5
   in_position: {x: 0, y: 0, z: 0}
---- !u!114 &114920843828003286
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8bd34a78d4792e41a68c57f9a5d90ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  out_playerPosition: {x: 0, y: 0, z: 0}

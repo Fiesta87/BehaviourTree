@@ -20,7 +20,7 @@ public class WalkToTask : BehaviourTreeTask {
     // Use this methode to init your task, this code will be executed every time a parent start this task.
     public override void Begin () {
 
-        this.isAtDestination = this.characterMovementController.DistanceTo(in_position) <= param_distance;
+        this.isAtDestination = this.characterMovementController.DistanceTo(in_position) <= param_distance * 1.5f;
 
         if(!isAtDestination) {
             this.canWalkToDestination = this.characterMovementController.WalkTo(in_position);

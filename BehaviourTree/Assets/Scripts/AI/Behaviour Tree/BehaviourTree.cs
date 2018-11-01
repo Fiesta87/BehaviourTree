@@ -19,7 +19,6 @@ public class BehaviourTree : BehaviourTreeNode {
     }
 
     public override BehaviourTree.Status Tick () {
-		Debug.Log("BehaviourTree Tick");
         return child.Tick();
     }
 

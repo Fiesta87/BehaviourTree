@@ -163,6 +163,10 @@ public class BehaviourTreeNodeEditor : Editor {
 		GUILayout.BeginHorizontal();
 
 			try {
+
+				if( ! node.contextLink.ContainsKey(variable.name)) {
+					node.contextLink[variable.name] = variable.name.Split('_')[1];
+				}
 				string initialValue = node.contextLink[variable.name];
 
 				GUI.color = Color.black;

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rect:
     serializedVersion: 2
-    x: 413.5
-    y: 13
+    x: 416.5
+    y: 10
     width: 180
     height: 60
   ID: 0
@@ -34,8 +34,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rect:
     serializedVersion: 2
-    x: 513.5
-    y: 233
+    x: 516.5
+    y: 230
     width: 180
     height: 60
   ID: 6
@@ -54,8 +54,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rect:
     serializedVersion: 2
-    x: 413.5
-    y: 123
+    x: 416.5
+    y: 120
     width: 180
     height: 60
   ID: 4
@@ -90,8 +90,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rect:
     serializedVersion: 2
-    x: 313.5
-    y: 233
+    x: 316.5
+    y: 230
     width: 180
     height: 60
   ID: 5

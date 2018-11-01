@@ -3,6 +3,8 @@ This list is not ordered by priority, it is just idea of future development ...
 Add new decorator node types.
 	- IsContextVariableDefined
 
+Add random order option for control nodes.
+
 Add debug/actif node option.
 
 Add build-in execution nodes to manage the tree execution (eg. SetContextVariable).
