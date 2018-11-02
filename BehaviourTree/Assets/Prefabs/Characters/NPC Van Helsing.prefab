@@ -26,6 +26,7 @@ GameObject:
   - component: {fileID: 114902534313205682}
   - component: {fileID: 114073098757822766}
   - component: {fileID: 114307063901246334}
+  - component: {fileID: 114482718331494846}
   m_Layer: 9
   m_Name: NPC Van Helsing
   m_TagString: Untagged
@@ -132,6 +133,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97775af9e9a75f247b3930677a60070c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114482718331494846
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1017995050222926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f29a777eec0e37f4091d5ba4133321b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  negotiation: 3
+  strength: 1
 --- !u!114 &114746119300882964
 MonoBehaviour:
   m_ObjectHideFlags: 1
